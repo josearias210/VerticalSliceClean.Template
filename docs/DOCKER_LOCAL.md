@@ -179,7 +179,7 @@ docker stats
   "OpenTelemetry": {
     "OtlpEndpoint": "http://localhost:4317",
     "ServiceName": "YourApp.Api",
-    "ServiceVersion": "1.0.0"
+    "ServiceVersion": "0.1.0"
   }
 }
 ```

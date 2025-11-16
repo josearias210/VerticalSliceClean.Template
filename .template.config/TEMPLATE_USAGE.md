@@ -199,7 +199,7 @@ To share this template with your team:
 dotnet pack -o ./nupkg
 
 # Publish to NuGet.org or private feed
-dotnet nuget push ./nupkg/CleanVerticalSlice.Template.1.0.0.nupkg -s https://api.nuget.org/v3/index.json -k [YOUR_API_KEY]
+dotnet nuget push ./nupkg/CleanVerticalSlice.Template.0.1.0.nupkg -s https://api.nuget.org/v3/index.json -k [YOUR_API_KEY]
 ```
 
 ### 2. Team Installation

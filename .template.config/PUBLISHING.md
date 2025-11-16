@@ -41,7 +41,7 @@ Create `VerticalSliceClean.Template.nuspec` in root:
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
   <metadata>
     <id>VerticalSliceClean.Template</id>
-    <version>1.0.0</version>
+    <version>0.1.0</version>
     <description>.NET 10 API Template with Clean Architecture, Vertical Slice, JWT, ErrorOr pattern</description>
     <authors>Jose Antonio Arias</authors>
     <packageTypes>
@@ -70,7 +70,7 @@ nuget pack VerticalSliceClean.Template.nuspec -OutputDirectory ./nupkg
 
 #### To NuGet.org (Public)
 ```powershell
-dotnet nuget push ./nupkg/VerticalSliceClean.Template.1.0.0.nupkg `
+dotnet nuget push ./nupkg/VerticalSliceClean.Template.0.1.0.nupkg `
   --api-key YOUR_NUGET_API_KEY `
   --source https://api.nuget.org/v3/index.json
 ```
@@ -85,7 +85,7 @@ dotnet nuget add source `
   --password YOUR_PAT
 
 # Push
-dotnet nuget push ./nupkg/BaseNet10.Template.1.0.0.nupkg `
+dotnet nuget push ./nupkg/BaseNet10.Template.0.1.0.nupkg `
   --source AzureArtifacts
 ```
 
@@ -100,7 +100,7 @@ dotnet nuget add source `
   "https://nuget.pkg.github.com/YOUR_GITHUB_USERNAME/index.json"
 
 # Push
-dotnet nuget push ./nupkg/BaseNet10.Template.1.0.0.nupkg `
+dotnet nuget push ./nupkg/BaseNet10.Template.0.1.0.nupkg `
   --source github
 ```
 
@@ -151,14 +151,14 @@ Update version in these locations:
 ```json
 {
   "identity": "VerticalSliceClean.Template",
-  "version": "1.0.0",  // <-- HERE
+  "version": "0.1.0",  // <-- HERE
   ...
 }
 ```
 
 2. `VerticalSliceClean.Template.nuspec` (if using NuGet):
 ```xml
-<version>1.0.0</version>  <!-- HERE -->
+<version>0.1.0</version>  <!-- HERE -->
 ```
 
 3. Release notes in README
@@ -269,13 +269,13 @@ dotnet new list | Select-String "vsclean"
 dotnet new uninstall VerticalSliceClean.Template
 
 # Reinstall specific version
-dotnet new install VerticalSliceClean.Template::1.0.0
+dotnet new install VerticalSliceClean.Template::0.1.0
 ```
 
 ### NuGet Push Fails
 ```powershell
 # Validate package
-nuget verify -Signatures ./nupkg/VerticalSliceClean.Template.1.0.0.nupkg
+nuget verify -Signatures ./nupkg/VerticalSliceClean.Template.0.1.0.nupkg
 
 # Test with different API key
 dotnet nuget push --help

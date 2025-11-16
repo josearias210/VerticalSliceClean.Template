@@ -9,7 +9,7 @@ El template sigue [Semantic Versioning 2.0.0](https://semver.org/):
 ```
 MAJOR.MINOR.PATCH
 
-1.0.0
+0.1.0
 │ │ │
 │ │ └─── PATCH: Correcciones de bugs, cambios menores
 │ └───── MINOR: Nuevas características, compatible hacia atrás
@@ -20,9 +20,9 @@ MAJOR.MINOR.PATCH
 
 | Versión | Tipo de Cambio | Ejemplos |
 |---------|----------------|----------|
-| **1.0.0** → **1.0.1** | PATCH | Corregir typo, actualizar dependencia menor, fix en documentación |
-| **1.0.0** → **1.1.0** | MINOR | Agregar nuevo parámetro opcional, agregar feature opcional, mejorar documentación |
-| **1.0.0** → **2.0.0** | MAJOR | Cambiar estructura de carpetas, remover parámetro, cambiar .NET version |
+| **0.1.0** → **0.1.1** | PATCH | Corregir typo, actualizar dependencia menor, fix en documentación |
+| **0.1.0** → **0.1.0** | MINOR | Agregar nuevo parámetro opcional, agregar feature opcional, mejorar documentación |
+| **0.1.0** → **1.0.0** | MAJOR | Cambiar estructura de carpetas, remover parámetro, cambiar .NET version |
 
 ---
 
@@ -220,9 +220,9 @@ Crea `MIGRATION_v2.md`:
 ### Roadmap Ejemplo
 
 - **v1.0.0** (Actual) - Template base con JWT, Vertical Slice, Docker production
-- **v1.1.0** (Q4 2025) - Docker Compose local, mejoras en docs
-- **v1.2.0** (Q1 2026) - Soporte para PostgreSQL, mejoras en testing
-- **v2.0.0** (Q2 2026) - Upgrade a .NET 11, nueva estructura
+- **v0.1.2** (Q4 2025) - Docker Compose local, mejoras en docs
+- **v0.1.1** (Q1 2026) - Soporte para PostgreSQL, mejoras en testing
+
 
 ---
 

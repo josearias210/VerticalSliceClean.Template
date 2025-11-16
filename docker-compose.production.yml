@@ -81,7 +81,7 @@ services:
       # OpenTelemetry (disabled by default in production)
       OpenTelemetry__OtlpEndpoint: ${OTEL_ENDPOINT:-}
       OpenTelemetry__ServiceName: "Acme.Api"
-      OpenTelemetry__ServiceVersion: ${APP_VERSION:-1.0.0}
+      OpenTelemetry__ServiceVersion: ${APP_VERSION:-0.1.0}
     
     volumes:
       - api_logs:/app/logs

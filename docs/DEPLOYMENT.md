@@ -226,8 +226,8 @@ git push origin main
 
 **Option 2: Create a release tag**
 ```bash
-git tag -a v1.0.0 -m "Release version 1.0.0"
-git push origin v1.0.0
+git tag -a v0.1.0 -m "Release version 0.1.0"
+git push origin v0.1.0
 ```
 
 ### Monitor Deployment
