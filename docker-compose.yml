@@ -1,0 +1,107 @@
+version: "3.9"
+
+# =============================================================================
+# Docker Compose - Desarrollo Local
+# =============================================================================
+# Servicios: SQL Server + Jaeger (tracing) + Seq (logs)
+# 
+# Inicio rápido:
+#   docker compose up -d
+#
+# Ver logs:
+#   docker compose logs -f
+#
+# Detener:
+#   docker compose down
+#
+# 📖 Guía completa: docs/DOCKER_LOCAL.md
+# =============================================================================
+
+services:
+  # ---------------------------------------------------------------------------
+  # SQL Server 2022 (Developer Edition)
+  # ---------------------------------------------------------------------------
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: acme-sqlserver
+    restart: unless-stopped
+    ports:
+      - "${MSSQL_PORT:-1433}:1433"
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: ${MSSQL_SA_PASSWORD}
+      MSSQL_PID: "Developer"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"$${SA_PASSWORD}\" -C -Q \"SELECT 1\" || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # ---------------------------------------------------------------------------
+  # Jaeger - Distributed Tracing
+  # UI: http://localhost:16686
+  # ---------------------------------------------------------------------------
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: acme-jaeger
+    restart: unless-stopped
+    ports:
+      - "${JAEGER_UI_PORT:-16686}:16686"      # Jaeger UI
+      - "${JAEGER_OTLP_GRPC_PORT:-4317}:4317" # OTLP gRPC receiver
+      - "${JAEGER_OTLP_HTTP_PORT:-4318}:4318" # OTLP HTTP receiver
+    environment:
+      COLLECTOR_OTLP_ENABLED: "true"
+      SPAN_STORAGE_TYPE: "memory"
+      MEMORY_MAX_TRACES: "10000"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:14269/"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # ---------------------------------------------------------------------------
+  # Seq - Structured Logging
+  # UI: http://localhost:5341 (admin / Admin123!)
+  # ---------------------------------------------------------------------------
+  seq:
+    image: datalust/seq:latest
+    container_name: acme-seq
+    restart: unless-stopped
+    ports:
+      - "${SEQ_UI_PORT:-5341}:80"           # Seq UI
+      - "${SEQ_INGESTION_PORT:-5342}:5341"  # Ingestion API
+    environment:
+      ACCEPT_EULA: "Y"
+      SEQ_FIRSTRUN_ADMINPASSWORD: "${SEQ_ADMIN_PASSWORD:-Admin123!}"
+      SEQ_CACHE_SYSTEMRAMMB: "256"
+    volumes:
+      - seq_data:/data
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  sqlserver_data:
+    driver: local
+  seq_data:
+    driver: local

@@ -1,0 +1,50 @@
+# EditorConfig is awesome: https://editorconfig.org
+# Root configuration for the solution
+root = true
+
+# Top-level defaults
+[*]
+charset = utf-8
+end_of_line = crlf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 2
+
+# C# files
+[*.cs]
+indent_size = 4
+
+# Roslyn analyzer severities (StyleCop + general)
+# Map from style.ruleset: disable SA1124, SA1402, SA1649
+# SA1124: DoNotUseRegions
+# SA1402: File may only contain a single type
+# SA1649: File name should match first type name
+
+dotnet_diagnostic.SA1124.severity = none
+
+# SA1402 está duplicada en style.ruleset; una vez aquí, basta una entrada
+# Deshabilitamos por consistencia con el ruleset actual
+
+dotnet_diagnostic.SA1402.severity = none
+
+dotnet_diagnostic.SA1649.severity = none
+
+dotnet_diagnostic.S6964.severity = none
+
+dotnet_diagnostic.CA1848.severity = none
+
+# Recomendados: tratar warnings como warnings (no elevar a error por defecto)
+# dotnet_analyzer_diagnostic.category-StyleCop.severity = warning
+
+# Ejemplos útiles que puedes activar gradualmente:
+# Preferir var
+# dotnet_style_qualification_for_field = false:suggestion
+# csharp_style_var_for_built_in_types = true:suggestion
+# csharp_style_var_for_locals = true:suggestion
+# csharp_style_var_when_type_is_apparent = true:suggestion
+
+# Usings ordering (si usas StyleCop ordering rules)
+# dotnet_sort_system_directives_first = true
+# file_header_template puede usarse si no dependes de SA1633
+# file_header_template = -----------------------------------------------------------------------\nCopyright (c) Acme

@@ -1,0 +1,112 @@
+# Files and directories to exclude when creating new projects from template
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# IDE
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Build results
+bin/
+obj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Visual Studio cache/options
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.vsidx
+*.vspscc
+*_i.c
+*_p.c
+*.ilk
+*.meta
+*.obj
+*.iobj
+*.pch
+*.pdb
+*.ipdb
+*.pgc
+*.pgd
+*.rsp
+*.sbr
+*.tlb
+*.tli
+*.tlh
+*.tmp
+*.tmp_proj
+*_wpftmp.csproj
+*.log
+*.vspscc
+*.vssscc
+.builds
+*.pidb
+*.svclog
+*.scc
+
+# ReSharper
+_ReSharper*/
+*.ReSharper
+*.DotSettings.user
+
+# Rider
+.idea/
+
+# User secrets (sensitive data)
+secrets.json
+appsettings.*.json.user
+
+# Database files
+*.mdf
+*.ldf
+
+# Node modules (if any)
+node_modules/
+
+# Package files
+*.nupkg
+*.snupkg
+nupkg/
+
+# Test results
+TestResults/
+*.trx
+*.coverage
+
+# Temp files
+*.tmp
+*.bak
+*.swp
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Template config (don't copy the template config itself)
+.template.config/
+
+# Documentation that's specific to the template repo
+CHANGELOG.md
+.templateignore

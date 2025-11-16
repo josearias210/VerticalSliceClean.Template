@@ -1,0 +1,126 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Jose Antonio Arias R.(https://programemos.net)",
+  "classifications": [
+    "API",
+    "Clean Architecture",
+    "Vertical Slice"
+  ],
+  "identity": "VerticalSliceClean.Template",
+  "name": "VerticalSliceClean API Template",
+  "shortName": "vsclean",
+  "version": "0.1.0",
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  },
+  "sourceName": "Acme",
+  "preferNameDirectory": true,
+  "symbols": {
+    "ClientName": {
+      "type": "parameter",
+      "datatype": "string",
+      "defaultValue": "Acme",
+      "replaces": "Acme",
+      "fileRename": "Acme",
+      "description": "The client/company name for the API project"
+    },
+    "ProjectSuffix": {
+      "type": "parameter",
+      "datatype": "string",
+      "defaultValue": "Api",
+      "replaces": "Lab",
+      "fileRename": "Lab",
+      "description": "The project suffix (e.g., Lab, Api, Platform)"
+    },
+    "DatabaseName": {
+      "type": "parameter",
+      "datatype": "string",
+      "defaultValue": "AcmeDb",
+      "replaces": "AcmeDb",
+      "description": "The database name (will be used in connection strings)"
+    },
+    "AdminEmail": {
+      "type": "parameter",
+      "datatype": "string",
+      "defaultValue": "admin@acme.com",
+      "replaces": "admin@acme.com",
+      "description": "Default admin user email"
+    },
+    "AdminPassword": {
+      "type": "parameter",
+      "datatype": "string",
+      "defaultValue": "Admin@123456",
+      "replaces": "Admin@123456",
+      "description": "Default admin user password (change after first login)"
+    },
+    "JwtIssuer": {
+      "type": "parameter",
+      "datatype": "string",
+      "defaultValue": "https://localhost:7001",
+      "replaces": "https://localhost:7001",
+      "description": "JWT token issuer URL"
+    },
+    "JwtAudience": {
+      "type": "parameter",
+      "datatype": "string",
+      "defaultValue": "https://localhost:7001",
+      "replaces": "https://localhost:7001",
+      "description": "JWT token audience URL"
+    },
+    "CorsOrigin": {
+      "type": "parameter",
+      "datatype": "string",
+      "defaultValue": "https://localhost:5173",
+      "replaces": "https://localhost:5173",
+      "description": "Allowed CORS origin for frontend"
+    },
+    "skipRestore": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "false",
+      "description": "If specified, skips the automatic NuGet package restore"
+    }
+  },
+  "primaryOutputs": [
+    {
+      "path": "src/Acme.slnx"
+    }
+  ],
+  "postActions": [
+    {
+      "condition": "(!skipRestore)",
+      "description": "Restore NuGet packages required by this project.",
+      "manualInstructions": [
+        {
+          "text": "Run 'dotnet restore'"
+        }
+      ],
+      "actionId": "210D431B-A78B-4D2F-B762-4ED3E3EA9025",
+      "continueOnError": true
+    }
+  ],
+  "sources": [
+    {
+      "modifiers": [
+        {
+          "exclude": [
+            ".git/**",
+            ".vs/**",
+            "**/.vs/**",
+            "**/.vscode/**",
+            "**/bin/**",
+            "**/obj/**",
+            "**/*.user",
+            "**/*.suo",
+            "**/*.vsidx",
+            "**/.template.config/**",
+            "**/node_modules/**",
+            "**/.idea/**",
+            "**/*.DotSettings.user"
+          ]
+        }
+      ]
+    }
+  ]
+}
