@@ -1,6 +1,6 @@
 using System.Diagnostics;
 
-namespace Acme.AppHost.Middleware;
+namespace Acme.Host.Middleware;
 
 /// <summary>
 /// Middleware that generates or extracts correlation IDs for request tracing.

@@ -14,17 +14,17 @@ COPY ["Acme.Domain/Acme.Domain.csproj", "Acme.Domain/"]
 COPY ["Acme.Application/Acme.Application.csproj", "Acme.Application/"]
 COPY ["Acme.Infrastructure/Acme.Infrastructure.csproj", "Acme.Infrastructure/"]
 COPY ["Acme.Api/Acme.Api.csproj", "Acme.Api/"]
-COPY ["Acme.AppHost/Acme.AppHost.csproj", "Acme.AppHost/"]
+COPY ["Acme.Host/Acme.Host.csproj", "Acme.Host/"]
 
 # Restore dependencies (cached layer if project files don't change)
-RUN dotnet restore "Acme.AppHost/Acme.AppHost.csproj"
+RUN dotnet restore "Acme.Host/Acme.Host.csproj"
 
 # Copy everything else
 COPY . .
 
 # Build and publish AppHost (which includes Api)
-WORKDIR "/src/Acme.AppHost"
-RUN dotnet publish "Acme.AppHost.csproj" \
+WORKDIR "/src/Acme.Host"
+RUN dotnet publish "Acme.Host.csproj" \
     -c Release \
     -o /app/publish \
     --no-restore \
@@ -63,4 +63,4 @@ ENV ASPNETCORE_ENVIRONMENT=Production \
     DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
 
 # Run AppHost (which configures and starts the API)
-ENTRYPOINT ["dotnet", "Acme.AppHost.dll"]
+ENTRYPOINT ["dotnet", "Acme.Host.dll"]

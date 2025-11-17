@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.RateLimiting;
 using System.Threading.RateLimiting;
 
-namespace Acme.AppHost.Extensions;
+namespace Acme.Host.Extensions;
 
 public static class RateLimitingExtensions
 {

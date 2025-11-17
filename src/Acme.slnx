@@ -5,7 +5,7 @@
   </Folder>
   <Project Path="Acme.Api\Acme.Api.csproj" />
   <Project Path="Acme.Domain\Acme.Domain.csproj" />
-  <Project Path="Acme.AppHost\Acme.AppHost.csproj" />
+  <Project Path="Acme.Host\Acme.Host.csproj" />
   <Project Path="Acme.Infrastructure\Acme.Infrastructure.csproj" />
   <Project Path="Acme.Application\Acme.Application.csproj" />
 </Solution>

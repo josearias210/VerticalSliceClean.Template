@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Acme.AppHost.Middleware;
+namespace Acme.Host.Middleware;
 
 using Microsoft.AspNetCore.Http;
 

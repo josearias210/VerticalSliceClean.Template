@@ -2,7 +2,7 @@ using Acme.Application.Abstractions;
 using Acme.Infrastructure.Settings;
 using Microsoft.Extensions.Options;
 
-namespace Acme.AppHost.Extensions;
+namespace Acme.Host.Extensions;
 
 /// <summary>
 /// Extension methods for database initialization during application startup.

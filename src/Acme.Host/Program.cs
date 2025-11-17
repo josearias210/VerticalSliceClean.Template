@@ -1,6 +1,6 @@
 using Acme.Api;
-using Acme.AppHost;
-using Acme.AppHost.Extensions;
+using Acme.Host;
+using Acme.Host.Extensions;
 using Acme.Application;
 using Acme.Infrastructure;
 using Acme.Infrastructure.Extensions;

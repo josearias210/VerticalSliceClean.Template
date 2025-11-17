@@ -14,7 +14,7 @@
     <PackageReference Include="Microsoft.Data.SqlClient" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Acme.AppHost\Acme.AppHost.csproj" />
+    <ProjectReference Include="..\..\src\Acme.Host\Acme.Host.csproj" />
     <ProjectReference Include="..\..\src\Acme.Api\Acme.Api.csproj" />
     <ProjectReference Include="..\..\src\Acme.Application\Acme.Application.csproj" />
     <ProjectReference Include="..\..\src\Acme.Infrastructure\Acme.Infrastructure.csproj" />

@@ -1,6 +1,6 @@
-using Acme.AppHost.Extensions;
+using Acme.Host.Extensions;
 
-namespace Acme.AppHost;
+namespace Acme.Host;
 
 public static class DependencyInjection
 {
