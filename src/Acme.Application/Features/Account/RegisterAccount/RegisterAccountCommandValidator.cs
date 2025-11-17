@@ -1,8 +1,8 @@
 using FluentValidation;
-using Acme.Application.Common.Validators;
 using Acme.Domain.Enums;
 using Microsoft.AspNetCore.Identity;
 using AccountEntity = Acme.Domain.Entities.Account;
+using Acme.Application.Shared.Validators;
 
 namespace Acme.Application.Features.Account.RegisterAccount;
 

@@ -6,7 +6,7 @@
 
 using FluentValidation;
 
-namespace Acme.Application.Common.Validators;
+namespace Acme.Application.Shared.Validators;
 
 /// <summary>
 /// Reusable validation rules to maintain consistency across validators.

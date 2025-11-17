@@ -5,7 +5,7 @@
 // -----------------------------------------------------------------------
 
 using FluentValidation;
-using Acme.Application.Common.Validators;
+using Acme.Application.Shared.Validators;
 
 namespace Acme.Application.Features.Account.Login;
 
