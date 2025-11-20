@@ -15,7 +15,7 @@ public sealed class TodoItemsEndpoints : IEndpoint
 {
     public void Map(IEndpointRouteBuilder app)
     {
-        var todos = app.MapV1Group("todos")
+        var todos = app.MapGroup("todos")
             .RequireAuthorization();
 
         todos.MapPost("", async (ISender sender, [FromBody] CreateTodoItemCommand command, CancellationToken ct) =>

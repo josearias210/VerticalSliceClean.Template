@@ -7,55 +7,18 @@ namespace Acme.Host.Extensions;
 
 public static class WebApplicationExtensions
 {
-    /// <summary>
-    /// Configures the complete middleware pipeline for the application.
-    /// Middleware order is critical - each middleware wraps the next one.
-    /// </summary>
-    /// <remarks>
-    /// Pipeline flow:
-    /// 1. Exception handling (captures all downstream exceptions)
-    /// 2. Status code pages (converts error codes to ProblemDetails)
-    /// 3. HTTPS redirection (enforce secure connections)
-    /// 4. Logging/diagnostics (CorrelationId for tracing)
-    /// 5. CORS (cross-origin before auth)
-    /// 6. Rate limiting (throttle before auth)
-    /// 7. Cookie extraction (prepare auth header)
-    /// 8. Authentication/Authorization (security)
-    /// 9. Security headers (response hardening)
-    /// 10. Endpoints (business logic)
-    /// </remarks>
     public static WebApplication ConfigurePipeline(this WebApplication app)
     {
         // === Development-only features ===
         if (app.Environment.IsDevelopment())
         {
-            // Swagger/OpenAPI generation (required for both Swagger UI and Scalar)
-            app.UseSwagger();
-            
-            // Scalar UI - Modern OpenAPI documentation (recommended)
+            app.MapOpenApi();
             app.MapScalarApiReference("/scalar", options =>
             {
                 options
                     .WithTitle("Acme API")
                     .WithTheme(ScalarTheme.Purple)
-                    .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient)
-                    .WithOpenApiRoutePattern("/swagger/{documentName}/swagger.json");
-            });
-            
-            // Swagger UI (legacy, kept for compatibility)
-            app.UseSwaggerUI(options =>
-            {
-                options.SwaggerEndpoint("/swagger/v1/swagger.json", "Acme API v1");
-                options.RoutePrefix = "swagger";
-                
-                // UI improvements
-                options.DefaultModelsExpandDepth(-1);
-                options.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.List);
-                options.DisplayRequestDuration();
-                options.EnableDeepLinking();
-                options.EnableFilter();
-                options.ShowExtensions();
-                options.ConfigObject.AdditionalItems["persistAuthorization"] = true;
+                    .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient);
             });
         }
         else

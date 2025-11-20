@@ -32,10 +32,9 @@ public static class SecurityHeadersExtensions
             await next();
         });
 
-        // Disable CSP for documentation endpoints (Swagger, Scalar, OpenAPI)
+        // Disable CSP for documentation endpoints (Scalar, OpenAPI)
         // These tools require inline scripts and styles to function
         app.UseWhen(ctx => 
-            ctx.Request.Path.StartsWithSegments("/swagger") ||
             ctx.Request.Path.StartsWithSegments("/scalar") ||
             ctx.Request.Path.StartsWithSegments("/openapi"),
             branch =>
