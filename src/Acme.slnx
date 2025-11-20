@@ -1,8 +1,4 @@
 <Solution>
-  <Folder Name="/Tests/">
-    <Project Path="..\tests\Acme.UnitTests\Acme.UnitTests.csproj" />
-    <Project Path="..\tests\Acme.IntegrationTests\Acme.IntegrationTests.csproj" />
-  </Folder>
   <Project Path="Acme.Api\Acme.Api.csproj" />
   <Project Path="Acme.Domain\Acme.Domain.csproj" />
   <Project Path="Acme.Host\Acme.Host.csproj" />
