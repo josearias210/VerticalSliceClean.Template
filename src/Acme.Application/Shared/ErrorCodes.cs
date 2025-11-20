@@ -1,4 +1,4 @@
-namespace Acme.Application.Common;
+namespace Acme.Application.Shared;
 
 /// <summary>
 /// Centralized error codes for consistent error handling across the application.

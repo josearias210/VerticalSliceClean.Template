@@ -35,7 +35,7 @@
     <PackageVersion Include="Scalar.AspNetCore" Version="2.11.0" />
     <PackageVersion Include="System.Threading.RateLimiting" Version="10.0.0" />
     <!-- Swagger - Keep 9.x for compatibility -->
-    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="9.0.9" />
+    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.0.0" />
     <PackageVersion Include="Microsoft.OpenApi" Version="1.6.22" />
     <PackageVersion Include="Swashbuckle.AspNetCore" Version="7.2.0" />
     <PackageVersion Include="Swashbuckle.AspNetCore.Swagger" Version="7.2.0" />

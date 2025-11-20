@@ -27,17 +27,10 @@ public static class EndpointMetadataExtensions
     public static RouteHandlerBuilder WithMetadata(
         this RouteHandlerBuilder builder,
         string name,
-        string summary,
-        string description)
+        string summary)
     {
         return builder
             .WithName(name)
-            .WithDisplayName(summary)
-            .WithOpenApi(operation =>
-            {
-                operation.Summary = summary;
-                operation.Description = description;
-                return operation;
-            });
+            .WithDisplayName(summary);
     }
 }

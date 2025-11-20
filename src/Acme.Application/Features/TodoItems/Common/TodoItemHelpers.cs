@@ -1,6 +1,6 @@
 using ErrorOr;
-using Acme.Application.Common;
 using Acme.Domain.Entities;
+using Acme.Application.Shared;
 
 namespace Acme.Application.Features.TodoItems.Common;
 

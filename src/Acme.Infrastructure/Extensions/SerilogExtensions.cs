@@ -49,7 +49,8 @@ public static class SerilogExtensions
                 eventBodyLimitBytes: 262_144,            // 256KB per event
                 batchPostingLimit: 100,                  // Max 100 events per batch
                 period: TimeSpan.FromSeconds(seqSettings.BatchPeriodSeconds),
-                queueSizeLimit: seqSettings.QueueSizeLimit);
+                queueSizeLimit: seqSettings.QueueSizeLimit,
+                formatProvider: CultureInfo.InvariantCulture); // <-- Solución CA1305
 
             // File logging (persistent)
             configuration.WriteTo.File(

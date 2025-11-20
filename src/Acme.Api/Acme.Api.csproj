@@ -7,7 +7,6 @@
 	  </PackageReference>
     <PackageReference Include="ErrorOr" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
-    <PackageReference Include="Swashbuckle.AspNetCore" />
 	  <PackageReference Include="MediatR">
 	    <TreatAsUsed>true</TreatAsUsed>
 	  </PackageReference>

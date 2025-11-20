@@ -12,7 +12,6 @@ public static class DependencyInjection
     public static IServiceCollection AddPresentation(this IServiceCollection services)
     {
         services.AddOpenApi();
-        //services.AddEndpointsApiExplorer();
         services.AddCustomizedProblemDetails();
         services.AddExceptionHandler<GlobalExceptionHandler>();
         services.AddEndpoints(); // Register endpoints as keyed services
