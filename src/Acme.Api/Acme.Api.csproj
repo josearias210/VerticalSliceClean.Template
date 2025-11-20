@@ -2,16 +2,15 @@
 		
   <ItemGroup>
 	  <PackageReference Include="Asp.Versioning.Http" />
-	  <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
 	  <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore">
 	    <TreatAsUsed>true</TreatAsUsed>
 	  </PackageReference>
-	  <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
+    <PackageReference Include="ErrorOr" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
-    <PackageReference Include="Microsoft.OpenApi" />
     <PackageReference Include="Swashbuckle.AspNetCore" />
-	  <PackageReference Include="ErrorOr" />
-	  <PackageReference Include="MediatR" />
+	  <PackageReference Include="MediatR">
+	    <TreatAsUsed>true</TreatAsUsed>
+	  </PackageReference>
   </ItemGroup>
 
 	<ItemGroup>

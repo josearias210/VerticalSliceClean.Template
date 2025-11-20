@@ -12,32 +12,14 @@
   </ItemGroup>
 
   <ItemGroup>
-	  <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
-	  <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore">
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" />
+    <PackageReference Include="Scalar.AspNetCore" />
+    <PackageReference Include="Swashbuckle.AspNetCore">
+      <TreatAsUsed>true</TreatAsUsed>
+    </PackageReference>
+	  <PackageReference Include="Serilog.AspNetCore">
 	    <TreatAsUsed>true</TreatAsUsed>
 	  </PackageReference>
-	  <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
-	  <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
-    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" />
-    <PackageReference Include="Polly" />
-    <PackageReference Include="Polly.Contrib.WaitAndRetry" />
-    <PackageReference Include="Scalar.AspNetCore" />
-    <PackageReference Include="Swashbuckle.AspNetCore" />
-	  <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" />
-	  <PackageReference Include="Microsoft.EntityFrameworkCore.Tools">
-	   <PrivateAssets>all</PrivateAssets>
-	   <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-	   <TreatAsUsed>true</TreatAsUsed>
-	</PackageReference>
-	  <PackageReference Include="ErrorOr" />
-	  <PackageReference Include="MediatR" />
-	  <PackageReference Include="Serilog.AspNetCore" />
-	  <PackageReference Include="Serilog.Enrichers.Environment" />
-	  <PackageReference Include="Serilog.Enrichers.Thread" />
-	  <PackageReference Include="Serilog.Sinks.Seq" />
-	  <PackageReference Include="Serilog.Sinks.Console" />
-	  <PackageReference Include="Serilog.Sinks.File" />
   </ItemGroup>
 
 	<ItemGroup>
@@ -48,9 +30,5 @@
 	  <ProjectReference Include="..\Acme.Api\Acme.Api.csproj" />
 	  <ProjectReference Include="..\Acme.Infrastructure\Acme.Infrastructure.csproj" />
 	</ItemGroup>
-
-  <ItemGroup>
-    <InternalsVisibleTo Include="Acme.IntegrationTests" />
-  </ItemGroup>
 
 </Project>
