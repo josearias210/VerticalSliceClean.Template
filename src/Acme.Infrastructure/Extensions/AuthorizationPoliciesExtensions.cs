@@ -20,9 +20,9 @@ public static class AuthorizationPoliciesExtensions
     {
         services.AddAuthorizationBuilder()
             // Role-based policies
-            .AddPolicy("AdminOnly", policy => 
-                policy.RequireRole("Admin"))
-            
+            .AddPolicy("AdminOnly", policy =>
+                 policy.RequireRole("Admin", "Developer"))
+
             .AddPolicy("CanManageProducts", policy => 
                 policy.RequireRole("Admin", "ProductManager"))
             

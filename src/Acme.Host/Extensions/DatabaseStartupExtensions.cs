@@ -43,7 +43,7 @@ public static class DatabaseStartupExtensions
                 await sp.GetRequiredService<IDatabaseSeeder>().SeedRolesAsync(cancellationToken);
             }
 
-            if (databaseSettings.SeedAdminOnStartup)
+            if (app.Environment.IsDevelopment() && databaseSettings.SeedAdminOnStartup)
             {
                 logger.LogInformation("Seeding admin user...");
                 await sp.GetRequiredService<IDatabaseSeeder>().SeedAdminUserAsync(cancellationToken);

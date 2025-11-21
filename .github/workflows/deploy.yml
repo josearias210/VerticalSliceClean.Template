@@ -2,11 +2,11 @@ name: Build and Deploy
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main2, master2 ]
     tags:
       - 'v*.*.*'
   pull_request:
-    branches: [ main, master ]
+    branches: [ main2, master2 ]
 
 env:
   REGISTRY: ghcr.io

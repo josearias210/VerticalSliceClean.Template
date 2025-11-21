@@ -47,7 +47,7 @@ public class DatabaseSeeder(
     {
         var email = adminUserSettings.Email;
         var password = adminUserSettings.Password;
-        const string adminRole = nameof(Role.Admin);
+        const string adminRole = nameof(Role.Developer);
 
         // Validate configuration
         if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
