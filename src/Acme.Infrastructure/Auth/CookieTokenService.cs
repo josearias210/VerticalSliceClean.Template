@@ -54,7 +54,7 @@ public class CookieTokenService(IOptions<JwtSettings> jwtOptions, IHttpContextAc
             SameSite = sameSiteMode,
             MaxAge = TimeSpan.FromDays(jwtSettings.RefreshTokenDays),
             Path = "/api/v1/accounts/refresh", // Only sent to refresh endpoint
-            IsEssential = true
+            IsEssential = true,
         };
 
         context.Response.Cookies.Append(RefreshTokenCookieName, refreshToken, refreshCookieOptions);

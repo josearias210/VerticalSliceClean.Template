@@ -45,11 +45,10 @@ public class LoginCommandHandler(
         if (await userManager.IsLockedOutAsync(account))
         {
             var lockoutEnd = await userManager.GetLockoutEndDateAsync(account);
-            logger.LogWarning("Login attempt for locked account {Email}. Lockout until {LockoutEnd}", 
-                loginCommand.Email, lockoutEnd);
-            return Error.Forbidden(
-                "Auth.AccountLocked", 
-                $"Account is locked due to multiple failed login attempts. Try again after {lockoutEnd:yyyy-MM-dd HH:mm:ss} UTC");
+
+            logger.LogWarning("Login attempt for locked account {Email}. Lockout until {LockoutEnd}", loginCommand.Email, lockoutEnd);
+
+            return Error.Forbidden("Auth.AccountLocked", $"Account is locked due to multiple failed login attempts. Try again after {lockoutEnd:yyyy-MM-dd HH:mm:ss} UTC");
         }
 
         var valid = await userManager.CheckPasswordAsync(account, loginCommand.Password);
@@ -57,14 +56,12 @@ public class LoginCommandHandler(
         {
             // Increment failed access count and potentially lock account
             await userManager.AccessFailedAsync(account);
-            
+
             var failedCount = await userManager.GetAccessFailedCountAsync(account);
             var maxAttempts = userManager.Options.Lockout.MaxFailedAccessAttempts;
-            
-            logger.LogWarning(
-                "Login failed for {Email}. Failed attempts: {FailedCount}/{MaxAttempts}", 
-                loginCommand.Email, failedCount, maxAttempts);
-            
+
+            logger.LogWarning("Login failed for {Email}. Failed attempts: {FailedCount}/{MaxAttempts}", loginCommand.Email, failedCount, maxAttempts);
+
             return Error.Unauthorized("Auth.InvalidCredentials", "Invalid credentials");
         }
 
@@ -74,9 +71,7 @@ public class LoginCommandHandler(
         var tokens = await tokenService.CreateTokensAsync(account);
         if (tokens.IsError)
         {
-            logger.LogError("Token creation failed for {Email}: {Errors}",
-                loginCommand.Email,
-                string.Join(", ", tokens.Errors.Select(e => e.Code)));
+            logger.LogError("Token creation failed for {Email}: {Errors}", loginCommand.Email, string.Join(", ", tokens.Errors.Select(e => e.Code)));
             return tokens.Errors;
         }
 
@@ -84,10 +79,10 @@ public class LoginCommandHandler(
         cookieTokenService.SetTokenCookies(tokens.Value.accessToken, tokens.Value.refreshToken);
 
         var roles = await userManager.GetRolesAsync(account);
-        
+
         logger.LogInformation("Login successful for {Email}", loginCommand.Email);
-        return new LoginCommandResponse 
-        { 
+        return new LoginCommandResponse
+        {
             UserId = account.Id,
             Email = account.Email ?? string.Empty,
             FullName = account.FullName,
