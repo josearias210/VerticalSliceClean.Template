@@ -1,8 +1,5 @@
 using Acme.Api.Extensions;
 using Acme.Application.Features.Account.GetProfile;
-using Acme.Application.Features.Account.Login;
-using Acme.Application.Features.Account.Logout;
-using Acme.Application.Features.Account.RefreshToken;
 using Acme.Application.Features.Account.RegisterAccount;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -17,29 +14,6 @@ public sealed class AccountsEndpoints : IEndpoint
     {
         var accounts = app.MapGroup("api/v1/accounts")
             .RequireAuthorization();
-
-        accounts.MapPost("login", async (ISender sender, [FromBody] LoginCommand loginCommand, CancellationToken cancellationToken) =>
-            (await sender.Send(loginCommand, cancellationToken)).ToAuthResult())
-        .WithAnonymousAuth()
-        .WithMetadata(
-            "Login",
-            "Authenticate user and generate tokens",
-            "Authenticates a user with email and password. Returns user profile and sets access/refresh tokens in httpOnly cookies.");
-
-        accounts.MapPost("refresh", async (ISender sender, CancellationToken cancellationToken) =>
-            (await sender.Send(new RefreshTokenCommand(), cancellationToken)).ToAuthResult())
-        .WithAnonymousAuth()
-        .WithMetadata(
-            "RefreshToken",
-            "Refresh access token using refresh token from httpOnly cookie",
-            "Generates a new access token using the refresh token from httpOnly cookie. Returns new user profile and updates tokens in cookies.");
-
-        accounts.MapPost("logout", async (ISender sender, CancellationToken cancellationToken) =>
-            (await sender.Send(new LogoutCommand(), cancellationToken)).ToNoContentResult())
-        .WithMetadata(
-            "Logout",
-            "Logout and clear authentication cookies",
-            "Revokes the current refresh token and clears all authentication cookies. Requires valid access token.");
 
         accounts.MapGet("me", async (ISender sender, CancellationToken cancellationToken) =>
             (await sender.Send(new GetProfileQuery(), cancellationToken)).ToTypedResult())

@@ -47,7 +47,8 @@ public static class IdentityExtensions
             })
             .AddServer(options =>
             {
-                options.SetTokenEndpointUris("/connect/token");
+                options.SetTokenEndpointUris("/connect/token")
+                       .SetRevocationEndpointUris("/connect/revoke");
 
                 options.AllowPasswordFlow();
                 options.AllowRefreshTokenFlow();
