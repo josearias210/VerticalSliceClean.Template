@@ -2,6 +2,7 @@ namespace Acme.Api.Endpoints;
 
 using Acme.Api.Extensions;
 using Acme.Application.Features.Account.RegisterAccount;
+using Acme.Domain.Constants;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
@@ -15,6 +16,7 @@ public sealed class AccountsEndpoints : IEndpoint
             .RequireAuthorization()
             .RequireRateLimiting("auth");
 
-        accounts.MapPost("/", async (ISender sender, [FromBody] RegisterAccountCommand command, CancellationToken cancellationToken) => (await sender.Send(command, cancellationToken)).ToTypedResult());
+        accounts.MapPost("/", async (ISender sender, [FromBody] RegisterAccountCommand command, CancellationToken cancellationToken) => (await sender.Send(command, cancellationToken)).ToTypedResult())
+            .RequireAuthorization(policy => policy.RequireRole(Roles.Admin));
     }
 }

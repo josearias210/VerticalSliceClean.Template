@@ -5,7 +5,7 @@ public interface IUserIdentityService
     string? UserId { get; }
     string? UserName { get; }
     bool IsAuthenticated { get; }
-    string? GetRole();
+    string GetRole();
     
     /// <summary>
     /// Gets all scopes from the JWT token.

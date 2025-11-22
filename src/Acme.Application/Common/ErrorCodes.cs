@@ -13,5 +13,6 @@ public static class ErrorCodes
         public const string RoleAssignFailed = "Account.RoleAssignFailed";
         public const string EmailExists = "Account.EmailExists";
         public const string InsufficientPermissions = "Account.InsufficientPermissions";
+        public const string DeveloperRoleNotAllowed = "Account.DeveloperRoleNotAllowed";
     }
 }

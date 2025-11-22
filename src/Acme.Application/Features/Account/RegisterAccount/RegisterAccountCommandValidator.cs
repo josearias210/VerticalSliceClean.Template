@@ -11,5 +11,9 @@ public class RegisterAccountCommandValidator : AbstractValidator<RegisterAccount
         RuleFor(x => x.Email).NotEmpty().WithErrorCode(Account.EmailEmpty);
         RuleFor(x => x.Role).NotEmpty().WithErrorCode(Account.RoleEmpty);
         RuleFor(x => x.Role).IsInEnum().WithErrorCode(Account.RoleInvalid);
+
+        RuleFor(x => x.Role)
+            .Must(role => role != Domain.Enums.Role.Developer)
+            .WithErrorCode(Account.DeveloperRoleNotAllowed);
     }
 }
