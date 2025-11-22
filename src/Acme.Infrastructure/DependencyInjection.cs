@@ -1,6 +1,5 @@
 using Acme.Application.Abstractions;
 using Acme.Infrastructure.Auth;
-using Acme.Infrastructure.BackgroundJobs;
 using Acme.Infrastructure.Extensions;
 using Acme.Infrastructure.Persistence.EF;
 using Acme.Infrastructure.Services;
@@ -56,9 +55,6 @@ public static class DependencyInjection
         services.AddAuthorizationPolicies();
 
         // === Authentication Services ===
-        services.AddScoped<ITokenGenerator, TokenGenerator>();
-        services.AddScoped<ITokenService, TokenService>();
-        services.AddScoped<ICookieTokenService, CookieTokenService>();
         services.AddScoped<IUserIdentityService, UserIdentityService>();
         
         // === Communication Services ===
@@ -110,9 +106,6 @@ public static class DependencyInjection
         services.AddDefaultHealthChecks();
         var corsOptionsMonitor = services.BuildServiceProvider().GetRequiredService<IOptionsMonitor<CorsSettings>>();
         services.AddConfiguredCors(corsOptionsMonitor);
-
-        // === Background Jobs ===
-        services.AddHostedService<TokenCleanupService>();
 
         return services;
     }

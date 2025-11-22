@@ -10,7 +10,6 @@
     </PackageReference>
     <PackageReference Include="MediatR" />
     <PackageReference Include="ErrorOr" />
-    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
   </ItemGroup>

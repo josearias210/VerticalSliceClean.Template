@@ -1,6 +1,5 @@
 using System.Security.Claims;
 using Acme.Domain.Entities;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using OpenIddict.Abstractions;
 using OpenIddict.Server;

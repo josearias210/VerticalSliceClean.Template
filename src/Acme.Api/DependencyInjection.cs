@@ -1,4 +1,3 @@
-using Asp.Versioning;
 using Acme.Api.Exceptions;
 using Acme.Api.Extensions;
 using Microsoft.AspNetCore.Http.Json;

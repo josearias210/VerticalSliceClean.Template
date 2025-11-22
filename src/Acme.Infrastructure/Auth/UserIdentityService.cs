@@ -7,7 +7,6 @@
 namespace Acme.Infrastructure.Auth;
 
 using Acme.Application.Abstractions;
-using Acme.Infrastructure.Auth.Models;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
 
@@ -17,16 +16,6 @@ public class UserIdentityService(IHttpContextAccessor httpContextAccessor) : IUs
 
     public string? GetUserId()
     {
-        return httpContextAccessor.HttpContext?.User?.FindFirstValue(AcmeClaim.UserId);
-    }
-
-    public string? GetEmail()
-    {
-        return httpContextAccessor.HttpContext?.User?.FindFirstValue(AcmeClaim.Email);
-    }
-
-    public string? GetRole()
-    {
-        return httpContextAccessor.HttpContext?.User?.FindFirstValue(AcmeClaim.Role);
+        return httpContextAccessor.HttpContext?.User?.FindFirstValue("");
     }
 }

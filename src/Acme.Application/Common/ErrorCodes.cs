@@ -1,4 +1,4 @@
-namespace Acme.Application.Shared;
+namespace Acme.Application.Common;
 
 /// <summary>
 /// Centralized error codes for consistent error handling across the application.
@@ -6,20 +6,6 @@ namespace Acme.Application.Shared;
 /// </summary>
 public static class ErrorCodes
 {
-    /// <summary>
-    /// Authentication and authorization related error codes.
-    /// </summary>
-    public static class Auth
-    {
-        public const string InvalidCredentials = "Auth.InvalidCredentials";
-        public const string InvalidRefreshToken = "Auth.InvalidRefreshToken";
-        public const string ExpiredRefreshToken = "Auth.ExpiredRefreshToken";
-        public const string MissingRefreshToken = "Auth.MissingRefreshToken";
-        public const string TokenReuseDetected = "Auth.TokenReuseDetected";
-        public const string AccountLocked = "Auth.AccountLocked";
-        public const string UserNotFound = "Auth.UserNotFound";
-    }
-
     /// <summary>
     /// TodoItem entity related error codes (example domain errors).
     /// </summary>

@@ -18,31 +18,13 @@ public sealed class TodoItemsEndpoints : IEndpoint
         var todos = app.MapGroup("api/v1/todos")
             .RequireAuthorization();
 
-        todos
-            .MapPost("", async (ISender sender, [FromBody] CreateTodoItemCommand command, CancellationToken ct) =>(await sender.Send(command, ct))
-            .ToCreatedResult($"/api/v1/todos"))
-            .WithMetadata("CreateTodoItem", "Create a new todo item", "Creates a new todo item for the authenticated user");
+        todos.MapPost("/", async (ISender sender, [FromBody] CreateTodoItemCommand command, CancellationToken ct) => (await sender.Send(command, ct)).ToCreatedResult($"/api/v1/todos"));
 
-        todos
-            .MapGet("", async (ISender sender, [FromQuery] bool? isCompleted, CancellationToken ct) =>(await sender.Send(new GetTodoItemsQuery(isCompleted), ct))
-            .ToTypedResult())
-            .WithMetadata("GetTodoItems", "Get all todo items", "Gets all todo items for the authenticated user with optional filtering");
+        todos.MapGet("/", async (ISender sender, [FromQuery] bool? isCompleted, CancellationToken ct) => (await sender.Send(new GetTodoItemsQuery(isCompleted), ct)).ToTypedResult());
+        todos.MapGet("{id:guid}", async (ISender sender, Guid id, CancellationToken ct) => (await sender.Send(new GetTodoItemByIdQuery(id), ct)).ToTypedResult());
 
-        todos
-            .MapGet("{id:guid}", async (ISender sender, Guid id, CancellationToken ct) =>(await sender.Send(new GetTodoItemByIdQuery(id), ct))
-            .ToTypedResult())
-            .WithMetadata("GetTodoItemById", "Get todo item by id", "Gets a specific todo item by its id");
+        todos.MapPut("{id:guid}", async (ISender sender, Guid id, [FromBody] UpdateTodoItemCommand command, CancellationToken ct) => (await sender.Send(command, ct)).ToTypedResult());
 
-        todos
-            .MapPut("{id:guid}", async (ISender sender, Guid id, [FromBody] UpdateTodoItemCommand command, CancellationToken ct) =>
-            {
-                return (await sender.Send(command, ct)).ToTypedResult();
-            })
-            .WithMetadata("UpdateTodoItem", "Update a todo item", "Updates an existing todo item. Only provided fields will be updated.");
-
-        todos
-            .MapDelete("{id:guid}", async (ISender sender, Guid id, CancellationToken ct) =>(await sender.Send(new DeleteTodoItemCommand(id), ct))
-            .ToNoContentResult())
-            .WithMetadata("DeleteTodoItem", "Delete a todo item", "Deletes an existing todo item");
+        todos.MapDelete("{id:guid}", async (ISender sender, Guid id, CancellationToken ct) => (await sender.Send(new DeleteTodoItemCommand(id), ct)).ToNoContentResult());
     }
 }

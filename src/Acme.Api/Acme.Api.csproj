@@ -10,7 +10,6 @@
 	  <PackageReference Include="MediatR">
 	    <TreatAsUsed>true</TreatAsUsed>
 	  </PackageReference>
-	  <PackageReference Include="OpenIddict.AspNetCore" />
   </ItemGroup>
 
 	<ItemGroup>

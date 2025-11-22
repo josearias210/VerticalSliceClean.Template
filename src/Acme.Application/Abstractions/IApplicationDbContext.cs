@@ -5,8 +5,7 @@ namespace Acme.Application.Abstractions
 {
     public interface IApplicationDbContext
     {
-        DbSet<RefreshToken> RefreshTokens { get; }
-        DbSet<Acme.Domain.Entities.Account> Accounts { get; }
+        DbSet<Account> Accounts { get; }
         
         // Example entity - TodoItem demonstrates CRUD patterns
         DbSet<TodoItem> TodoItems { get; }

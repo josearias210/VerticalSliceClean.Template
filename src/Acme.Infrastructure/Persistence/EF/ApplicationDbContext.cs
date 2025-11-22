@@ -11,17 +11,12 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public const string Schema = "dbo";
     public const string MigrationsHistoryTable = "__EFMigrationsHistory";
 
-    // Core authentication tables
-    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
-
     public DbSet<OpenIddictEntityFrameworkCoreApplication> OpenIddictApplications => Set<OpenIddictEntityFrameworkCoreApplication>();
     public DbSet<OpenIddictEntityFrameworkCoreAuthorization> OpenIddictAuthorizations => Set<OpenIddictEntityFrameworkCoreAuthorization>();
     public DbSet<OpenIddictEntityFrameworkCoreScope> OpenIddictScopes => Set<OpenIddictEntityFrameworkCoreScope>();
     public DbSet<OpenIddictEntityFrameworkCoreToken> OpenIddictTokens => Set<OpenIddictEntityFrameworkCoreToken>();
 
     public DbSet<Account> Accounts => Set<Account>();
-    
-    // Example entity - TodoItem demonstrates CRUD patterns
     public DbSet<TodoItem> TodoItems => Set<TodoItem>();
 
     protected override void OnModelCreating(ModelBuilder builder)
