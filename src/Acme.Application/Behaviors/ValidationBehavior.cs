@@ -10,8 +10,6 @@ public sealed class ValidationBehavior<TRequest, TResponse>(
     where TRequest : IRequest<TResponse>
     where TResponse : IErrorOr
 {
-    private readonly IEnumerable<IValidator<TRequest>> validators = validators;
-
     public async Task<TResponse> Handle(
         TRequest request,
         RequestHandlerDelegate<TResponse> next,

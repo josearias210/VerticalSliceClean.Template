@@ -16,9 +16,6 @@ internal sealed class GlobalExceptionHandler(
     IHostEnvironment env, 
     ILogger<GlobalExceptionHandler> logger) : IExceptionHandler
 {
-    private readonly IHostEnvironment env = env;
-    private readonly ILogger<GlobalExceptionHandler> logger = logger;
-
     public async ValueTask<bool> TryHandleAsync(
         HttpContext httpContext, 
         Exception exception, 
