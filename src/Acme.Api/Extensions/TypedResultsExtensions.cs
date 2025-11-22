@@ -25,7 +25,7 @@ public static class TypedResultsExtensions
             {
                 ErrorType.Validation => CreateProblem(result.Errors, firstError),
                 ErrorType.NotFound => TypedResults.NotFound(),
-                ErrorType.Conflict => TypedResults.Conflict(),
+                ErrorType.Conflict => CreateProblem(result.Errors, firstError, StatusCodes.Status409Conflict),
                 _ => CreateProblem(result.Errors, firstError)
             };
         }
@@ -48,7 +48,7 @@ public static class TypedResultsExtensions
             return firstError.Type switch
             {
                 ErrorType.Validation => CreateProblem(result.Errors, firstError),
-                ErrorType.Conflict => TypedResults.Conflict(),
+                ErrorType.Conflict => CreateProblem(result.Errors, firstError, StatusCodes.Status409Conflict),
                 _ => CreateProblem(result.Errors, firstError)
             };
         }
@@ -105,7 +105,7 @@ public static class TypedResultsExtensions
     /// Creates a ProblemHttpResult from ErrorOr errors.
     /// Returns errors as a list of codes in the 'errors' extension field.
     /// </summary>
-    private static ProblemHttpResult CreateProblem(List<Error> errors, Error firstError)
+    private static ProblemHttpResult CreateProblem(List<Error> errors, Error firstError, int statusCode = StatusCodes.Status400BadRequest)
     {
         var errorCodes = errors.Select(e => e.Code).Distinct().ToList();
 
@@ -113,7 +113,7 @@ public static class TypedResultsExtensions
         if (errors.Count > 1 && errors.All(e => e.Type == ErrorType.Validation))
         {
             return TypedResults.Problem(
-                statusCode: StatusCodes.Status400BadRequest,
+                statusCode: statusCode,
                 title: "Validation Error",
                 detail: firstError.Description,
                 extensions: new Dictionary<string, object?>
@@ -125,7 +125,7 @@ public static class TypedResultsExtensions
 
         // Single error or non-validation errors
         return TypedResults.Problem(
-            statusCode: StatusCodes.Status400BadRequest,
+            statusCode: statusCode,
             title: firstError.Code,
             extensions: new Dictionary<string, object?>
             {
