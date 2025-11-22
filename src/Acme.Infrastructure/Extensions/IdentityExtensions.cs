@@ -3,6 +3,7 @@ using Acme.Infrastructure.Persistence.EF;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System.Security.Cryptography.X509Certificates;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace Acme.Infrastructure.Extensions;
@@ -80,17 +81,16 @@ public static class IdentityExtensions
                 {
                     // Production: Load certificates from configuration
                     var openIddictSettings = services.BuildServiceProvider()
-                        .GetRequiredService<Microsoft.Extensions.Options.IOptions<Settings.OpenIddictSettings>>()
-                        .Value;
+                        .GetRequiredService<Microsoft.Extensions.Options.IOptions<Settings.OpenIddictSettings>>().Value;
 
                     if (!string.IsNullOrEmpty(openIddictSettings.EncryptionCertificatePath) &&
                         !string.IsNullOrEmpty(openIddictSettings.SigningCertificatePath))
                     {
-                        var encryptionCert = new System.Security.Cryptography.X509Certificates.X509Certificate2(
+                        var encryptionCert = X509CertificateLoader.LoadPkcs12FromFile(
                             openIddictSettings.EncryptionCertificatePath,
                             openIddictSettings.CertificatePassword);
 
-                        var signingCert = new System.Security.Cryptography.X509Certificates.X509Certificate2(
+                        var signingCert = X509CertificateLoader.LoadPkcs12FromFile(
                             openIddictSettings.SigningCertificatePath,
                             openIddictSettings.CertificatePassword);
 

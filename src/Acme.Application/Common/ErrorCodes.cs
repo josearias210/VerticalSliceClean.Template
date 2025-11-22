@@ -12,5 +12,6 @@ public static class ErrorCodes
         public const string CreateFailed = "Account.CreateFailed";
         public const string RoleAssignFailed = "Account.RoleAssignFailed";
         public const string EmailExists = "Account.EmailExists";
+        public const string InsufficientPermissions = "Account.InsufficientPermissions";
     }
 }
