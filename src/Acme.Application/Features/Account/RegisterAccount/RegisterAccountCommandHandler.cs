@@ -42,13 +42,18 @@ public class RegisterAccountCommandHandler(UserManager<Account> userManager, IEm
         if (!roleResult.Succeeded)
         {
             logger.LogError("Failed to add role {Role} to account {Email}: {Errors}", temporaryPassword, command.Email, string.Join(", ", roleResult.Errors.Select(e => e.Code)));
+
+            // Compensation: Delete the user to avoid inconsistent state
+            await userManager.DeleteAsync(account);
+            
             return Error.Failure(ErrorCodes.Account.RoleAssignFailed);
         }
 
         try
         {
             await emailService.SendWelcomeWithPasswordAsync(command.Email, temporaryPassword, cancellationToken);
-            logger.LogInformation("Account registered successfully for {Email} with role {Role}. Welcome email sent.", command.Email, temporaryPassword);
+            // SECURITY: Do not log the password!
+            logger.LogInformation("Account registered successfully for {Email} with role {Role}. Welcome email sent.", command.Email, command.Role);
         }
         catch (Exception ex)
         {

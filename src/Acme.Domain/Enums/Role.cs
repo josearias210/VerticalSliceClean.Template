@@ -1,8 +1,3 @@
-// -----------------------------------------------------------------------
-// <copyright file="Role.cs" company="Acme">
-// Copyright (c) Acme. All rights reserved.
-// </copyright>
-// -----------------------------------------------------------------------
 
 namespace Acme.Domain.Enums;
 

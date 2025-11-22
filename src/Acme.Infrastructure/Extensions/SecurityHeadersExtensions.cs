@@ -1,7 +1,7 @@
+namespace Acme.Infrastructure.Extensions;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Hosting;
-
-namespace Acme.Infrastructure.Extensions;
 
 public static class SecurityHeadersExtensions
 {

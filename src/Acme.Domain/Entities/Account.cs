@@ -1,8 +1,3 @@
-// -----------------------------------------------------------------------
-// <copyright file="Account.cs" company="Acme">
-// Copyright (c) Acme. All rights reserved.
-// </copyright>
-// -----------------------------------------------------------------------
 
 namespace Acme.Domain.Entities;
 

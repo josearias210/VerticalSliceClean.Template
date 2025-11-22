@@ -1,9 +1,9 @@
+namespace Acme.Infrastructure.Extensions;
+
 using Acme.Infrastructure.Settings;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-
-namespace Acme.Infrastructure.Extensions;
 
 public static class CorsExtensions
 {
@@ -13,6 +13,8 @@ public static class CorsExtensions
     {
         var corsSettings = corsOptions.CurrentValue;
         
+        services.AddCors(opts =>
+        {
             opts.AddPolicy(DefaultCorsPolicy, policy =>
             {
                 // Check if we have a wildcard origin

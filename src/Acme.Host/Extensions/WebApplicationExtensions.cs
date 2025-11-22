@@ -1,9 +1,9 @@
+namespace Acme.Host.Extensions;
+
 using Acme.Api.Extensions;
 using Acme.Host.Middleware;
 using Acme.Infrastructure.Extensions;
 using Scalar.AspNetCore;
-
-namespace Acme.Host.Extensions;
 
 public static class WebApplicationExtensions
 {

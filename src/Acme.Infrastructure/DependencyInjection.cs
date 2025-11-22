@@ -1,3 +1,5 @@
+namespace Acme.Infrastructure;
+
 using Acme.Application.Abstractions;
 using Acme.Infrastructure.Auth;
 using Acme.Infrastructure.Extensions;
@@ -9,8 +11,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-
-namespace Acme.Infrastructure;
 
 public static class DependencyInjection
 {

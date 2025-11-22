@@ -1,12 +1,6 @@
-// -----------------------------------------------------------------------
-// <copyright file="AuthorizationPoliciesExtensions.cs" company="Acme">
-// Copyright (c) Acme. All rights reserved.
-// </copyright>
-// -----------------------------------------------------------------------
+namespace Acme.Infrastructure.Extensions;
 
 using Microsoft.Extensions.DependencyInjection;
-
-namespace Acme.Infrastructure.Extensions;
 
 /// <summary>
 /// Extension methods for configuring authorization policies.
