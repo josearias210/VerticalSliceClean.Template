@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OpenIddict.Abstractions;
+using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace Acme.Infrastructure.Persistence.EF;
 
@@ -160,10 +161,11 @@ public class DatabaseSeeder(
                 OpenIddictConstants.Permissions.GrantTypes.RefreshToken,
                 
                 // Scopes
-                OpenIddictConstants.Permissions.Prefixes.Scope + "api",
+                Scopes.OpenId,
                 OpenIddictConstants.Permissions.Scopes.Email,
                 OpenIddictConstants.Permissions.Scopes.Profile,
                 OpenIddictConstants.Permissions.Scopes.Roles,
+                OpenIddictConstants.Permissions.Prefixes.Scope + "api",
                 OpenIddictConstants.Permissions.Prefixes.Scope + OpenIddictConstants.Scopes.OfflineAccess
             }
         }, cancellationToken);

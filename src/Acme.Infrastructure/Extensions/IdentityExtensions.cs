@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace Acme.Infrastructure.Extensions;
@@ -39,7 +40,7 @@ public static class IdentityExtensions
         return services;
     }
 
-    public static IServiceCollection AddOpenIddictAuth(this IServiceCollection services)
+    public static IServiceCollection AddOpenIddictAuth(this IServiceCollection services, IHostEnvironment environment)
     {
         services
             .AddOpenIddict()
@@ -71,7 +72,10 @@ public static class IdentityExtensions
                 options.AddDevelopmentEncryptionCertificate()
                        .AddDevelopmentSigningCertificate();
 
-                options.DisableAccessTokenEncryption();
+                if (environment.IsDevelopment())
+                {
+                    options.DisableAccessTokenEncryption();
+                }
 
                 options.UseAspNetCore();
 

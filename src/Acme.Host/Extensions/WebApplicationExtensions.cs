@@ -24,19 +24,14 @@ public static class WebApplicationExtensions
         else
         {
             // HSTS in production (HTTP Strict Transport Security)
+            app.UseHttpsRedirection();
             app.UseHsts();
         }
 
         // === Error Handling (must be first) ===
         app.UseExceptionHandler();
         app.UseStatusCodePages();
-        
-        // === HTTPS Redirection (configurable for container environments) ===
-        if (!app.Configuration.GetValue<bool>("DisableHttpsRedirection"))
-        {
-            app.UseHttpsRedirection();
-        }
-        
+                
         // === Logging and Diagnostics ===
         // Serilog handles HTTP request logging automatically
         app.UseMiddleware<CorrelationIdMiddleware>();
