@@ -2,6 +2,7 @@ namespace Acme.Api.Extensions;
 
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+
 public interface IEndpoint
 {
     void Map(IEndpointRouteBuilder app);
@@ -16,8 +17,7 @@ public static class EndpointsRegistration
     public static IServiceCollection AddEndpoints(this IServiceCollection services)
     {
         var asm = typeof(EndpointsRegistration).Assembly;
-        var endpointTypes = asm.DefinedTypes
-            .Where(t => !t.IsAbstract && typeof(IEndpoint).IsAssignableFrom(t));
+        var endpointTypes = asm.DefinedTypes.Where(t => !t.IsAbstract && typeof(IEndpoint).IsAssignableFrom(t));
 
         foreach (var type in endpointTypes)
         {
@@ -34,8 +34,7 @@ public static class EndpointsRegistration
     public static IEndpointRouteBuilder MapRoutes(this IEndpointRouteBuilder app)
     {
         var asm = typeof(EndpointsRegistration).Assembly;
-        var endpointTypes = asm.DefinedTypes
-            .Where(t => !t.IsAbstract && typeof(IEndpoint).IsAssignableFrom(t));
+        var endpointTypes = asm.DefinedTypes.Where(t => !t.IsAbstract && typeof(IEndpoint).IsAssignableFrom(t));
 
         foreach (var type in endpointTypes)
         {

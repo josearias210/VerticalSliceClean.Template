@@ -1,7 +1,7 @@
 using Acme.Api;
+using Acme.Application;
 using Acme.Host;
 using Acme.Host.Extensions;
-using Acme.Application;
 using Acme.Infrastructure;
 using Acme.Infrastructure.Extensions;
 using Serilog;

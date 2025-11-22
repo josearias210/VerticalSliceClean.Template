@@ -1,12 +1,9 @@
-using FluentValidation;
-using Acme.Application.Behaviors;
-using Acme.Application.Features.Account.RegisterAccount;
-using Acme.Domain.Entities;
-using MediatR;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.DependencyInjection;
-
 namespace Acme.Application;
+
+using Acme.Application.Behaviors;
+using FluentValidation;
+using MediatR;
+using Microsoft.Extensions.DependencyInjection;
 
 public static class DependencyInjection
 {
@@ -17,12 +14,11 @@ public static class DependencyInjection
         // Register most validators as Singleton for better performance (they're stateless)
         services.AddValidatorsFromAssembly(
             assembly,
-            lifetime: ServiceLifetime.Singleton,
-            filter: result => result.ValidatorType != typeof(RegisterAccountCommandValidator));
+            lifetime: ServiceLifetime.Singleton/*,
+            filter: result => result.ValidatorType != typeof(RegisterAccountCommandValidator)*/);
 
         // RegisterAccountCommandValidator needs Scoped because it depends on UserManager (Scoped)
-        services.AddScoped<IValidator<RegisterAccountCommand>>(sp =>
-            new RegisterAccountCommandValidator(sp.GetRequiredService<UserManager<Account>>()));
+        //services.AddScoped<IValidator<RegisterAccountCommand>>(sp =>new RegisterAccountCommandValidator(sp.GetRequiredService<UserManager<Account>>()));
 
         services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(assembly));

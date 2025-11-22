@@ -1,8 +1,8 @@
-using System.Security.Claims;
 using Acme.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using OpenIddict.Abstractions;
 using OpenIddict.Server;
+using System.Security.Claims;
 using static OpenIddict.Server.OpenIddictServerEvents;
 
 namespace Acme.Infrastructure.Auth.OpenIddict;

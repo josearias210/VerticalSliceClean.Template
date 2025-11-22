@@ -1,13 +1,7 @@
-// -----------------------------------------------------------------------
-// <copyright file="RegisterUserRequest.cs" company="Acme">
-// Copyright (c) Acme. All rights reserved.
-// </copyright>
-// -----------------------------------------------------------------------
+namespace Acme.Application.Features.Account.RegisterAccount;
 
 using ErrorOr;
 using MediatR;
-
-namespace Acme.Application.Features.Account.RegisterAccount;
 
 /// <summary>
 /// Command to register a new user account.

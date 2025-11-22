@@ -1,9 +1,6 @@
-using FluentValidation;
-using Acme.Domain.Enums;
-using Microsoft.AspNetCore.Identity;
-using AccountEntity = Acme.Domain.Entities.Account;
-
 namespace Acme.Application.Features.Account.RegisterAccount;
+
+using FluentValidation;
 
 /// <summary>
 /// Validator for account registration.
@@ -12,7 +9,7 @@ namespace Acme.Application.Features.Account.RegisterAccount;
 /// </summary>
 public class RegisterAccountCommandValidator : AbstractValidator<RegisterAccountCommand>
 {
-    public RegisterAccountCommandValidator(UserManager<AccountEntity> userManager)
+    public RegisterAccountCommandValidator()
     {
         RuleFor(x => x.Email).NotEmpty();
 

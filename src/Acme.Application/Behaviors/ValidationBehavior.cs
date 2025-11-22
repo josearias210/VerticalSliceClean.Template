@@ -1,8 +1,8 @@
+namespace Acme.Application.Behaviors;
+
 using ErrorOr;
 using FluentValidation;
 using MediatR;
-
-namespace Acme.Application.Behaviors;
 
 public sealed class ValidationBehavior<TRequest, TResponse>(
     IEnumerable<IValidator<TRequest>> validators

@@ -1,10 +1,10 @@
-using System.Globalization;
 using Acme.Infrastructure.Settings;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Serilog;
 using Serilog.Events;
+using System.Globalization;
 
 namespace Acme.Infrastructure.Extensions;
 

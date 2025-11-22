@@ -1,10 +1,8 @@
 using Acme.Domain.Entities;
 using Acme.Infrastructure.Persistence.EF;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace Acme.Infrastructure.Extensions;

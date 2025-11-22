@@ -1,14 +1,8 @@
-// -----------------------------------------------------------------------
-// <copyright file="ProductService.cs" company="Acme">
-// Copyright (c) Acme. All rights reserved.
-// </copyright>
-// -----------------------------------------------------------------------
-
 namespace Acme.Application.Features.Account.RegisterAccount;
 
-using ErrorOr;
 using Acme.Application.Abstractions;
 using Acme.Domain.Entities;
+using ErrorOr;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
