@@ -39,9 +39,6 @@ public static class IdentityExtensions
 
     public static IServiceCollection AddOpenIddictAuth(this IServiceCollection services)
     {
-        // 1️⃣ REGISTRA OAUTH2 / OIDC SERVER
-        services.AddControllers();
-
         services.AddOpenIddict()
             .AddCore(options =>
             {
@@ -70,8 +67,10 @@ public static class IdentityExtensions
                        .AddEphemeralSigningKey()
                        .DisableAccessTokenEncryption();
 
-                options.UseAspNetCore()
-                       .EnableTokenEndpointPassthrough();
+                options.UseAspNetCore();
+
+                options.AddEventHandler<OpenIddict.Server.OpenIddictServerEvents.HandleTokenRequestContext>(builder =>
+                    builder.UseScopedHandler<Acme.Infrastructure.Auth.OpenIddict.PasswordGrantHandler>());
             })
             .AddValidation(options =>
             {
