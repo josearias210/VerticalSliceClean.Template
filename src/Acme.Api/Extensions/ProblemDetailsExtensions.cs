@@ -1,6 +1,6 @@
-using Microsoft.Extensions.DependencyInjection;
-
 namespace Acme.Api.Extensions;
+
+using Microsoft.Extensions.DependencyInjection;
 
 public static class ProblemDetailsExtensions
 {

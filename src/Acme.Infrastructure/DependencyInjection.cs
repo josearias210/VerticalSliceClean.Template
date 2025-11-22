@@ -64,6 +64,8 @@ public static class DependencyInjection
         services.AddScoped<IDatabaseSeeder, DatabaseSeeder>();
         services.AddScoped<IDatabaseMigrator, DatabaseMigrator>();
         services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
+        services.AddSingleton<IPasswordGenerator, PasswordGenerator>();
+
         services.AddDbContext<ApplicationDbContext>((serviceProvider, options) =>
         {
             var connectionString = configuration.GetConnectionString("DefaultConnection");

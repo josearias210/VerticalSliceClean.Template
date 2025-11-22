@@ -1,8 +1,7 @@
-using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.DependencyInjection;
-
 namespace Acme.Api.Extensions;
 
+using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
 public interface IEndpoint
 {
     void Map(IEndpointRouteBuilder app);

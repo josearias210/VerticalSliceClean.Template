@@ -1,8 +1,8 @@
+namespace Acme.Api.Extensions;
+
 using ErrorOr;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
-
-namespace Acme.Api.Extensions;
 
 /// <summary>
 /// Extension methods to convert ErrorOr results to ASP.NET Core Typed Results.

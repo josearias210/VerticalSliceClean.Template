@@ -1,10 +1,10 @@
+namespace Acme.Api;
+
 using Acme.Api.Exceptions;
 using Acme.Api.Extensions;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.Extensions.DependencyInjection;
 using System.Text.Json.Serialization;
-
-namespace Acme.Api;
 
 public static class DependencyInjection
 {
