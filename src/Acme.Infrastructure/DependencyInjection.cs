@@ -52,7 +52,7 @@ public static class DependencyInjection
 
         // === Identity & Authentication ===
         services.AddIdentity();
-        services.AddJwtAuthentication();
+        services.AddOpenIddictAuth();
         services.AddAuthorizationPolicies();
 
         // === Authentication Services ===
@@ -98,6 +98,8 @@ public static class DependencyInjection
                 options.EnableSensitiveDataLogging();
                 options.EnableDetailedErrors();
             }
+
+            options.UseOpenIddict();
         });
 
         // === Telemetry ===

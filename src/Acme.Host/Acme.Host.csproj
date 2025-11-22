@@ -12,7 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" />
     <PackageReference Include="Scalar.AspNetCore" />
 	  <PackageReference Include="Serilog.AspNetCore">
 	    <TreatAsUsed>true</TreatAsUsed>

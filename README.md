@@ -362,9 +362,11 @@ public class TodoItemsEndpoints : IEndpoint
 # Add new migration
 cd src/[YourProject].Infrastructure
 dotnet ef migrations add MigrationName --startup-project ../[YourProject].AppHost
+dotnet ef migrations add AddOpenIddict
 
 # Update database
 dotnet ef database update --startup-project ../[YourProject].AppHost
+dotnet ef database update --startup-project ..\Acme.Host --context Acme.Infrastructure.Persistence.EF.ApplicationDbContext
 ```
 
 ---

@@ -54,7 +54,7 @@ public static class WebApplicationExtensions
         // === Cookie to Authorization Header (before authentication) ===
         app.UseMiddleware<CookieToHeaderMiddleware>();
         
-        // === Authentication & Authorization ===
+        // === Authentication & Authorization === 
         app.UseAuthentication();
         app.UseAuthorization();
         
@@ -63,6 +63,7 @@ public static class WebApplicationExtensions
         
         // === Endpoints ===
         app.MapDefaultHealthChecks();
+        app.MapControllers();
         app.MapRoutes();
 
         // === Graceful Shutdown Handling ===
