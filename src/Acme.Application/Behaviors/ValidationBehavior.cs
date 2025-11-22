@@ -36,8 +36,9 @@ public sealed class ValidationBehavior<TRequest, TResponse>(
 
         // Use FluentValidation ErrorCode if available, otherwise PropertyName
         // This allows custom error codes like "EmailAlreadyExists" instead of just "Email"
+        // Reemplaza la llamada a EndsWith por una versión que especifique StringComparison.Ordinal
         var errors = failures.ConvertAll(f => Error.Validation(
-            code: string.IsNullOrWhiteSpace(f.ErrorCode) ? f.PropertyName : f.ErrorCode,
+            code: (f.ErrorCode.EndsWith("Validator", StringComparison.Ordinal) || string.IsNullOrWhiteSpace(f.ErrorCode)) ? f.PropertyName : f.ErrorCode,
             description: f.ErrorMessage
         ));
 

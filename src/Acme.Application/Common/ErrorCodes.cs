@@ -9,8 +9,8 @@ public static class ErrorCodes
         public const string PasswordEmpty = "Account.Password.Required";
         public const string RoleEmpty = "Account.Role.Required";
         public const string RoleInvalid = "Account.Role.Invalid";
-        public const string CreateFailed = " Account.CreateFailed";
-        public const string RoleAssignFailed = " Account.RoleAssignFailed";
-        public const string EmailExists = " Account.EmailExists";
+        public const string CreateFailed = "Account.CreateFailed";
+        public const string RoleAssignFailed = "Account.RoleAssignFailed";
+        public const string EmailExists = "Account.EmailExists";
     }
 }

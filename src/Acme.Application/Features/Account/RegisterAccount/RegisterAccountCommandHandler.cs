@@ -18,7 +18,7 @@ public class RegisterAccountCommandHandler(UserManager<Account> userManager, IEm
         if (user is not null)
         {
             logger.LogWarning("The {Email} is already in use", command.Email);
-            return Error.Failure(ErrorCodes.Account.EmailExists);
+            return Error.Conflict(ErrorCodes.Account.EmailExists);
         }
 
         var temporaryPassword = passwordGenerator.GenerateStrong(16);
