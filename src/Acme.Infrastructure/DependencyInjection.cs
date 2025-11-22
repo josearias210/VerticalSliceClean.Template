@@ -51,7 +51,7 @@ public static class DependencyInjection
 
         // === Identity & Authentication ===
         services.AddIdentity();
-        services.AddOpenIddictAuth(configuration, environment);
+        services.AddOpenIddictAuth();
         services.AddAuthorizationPolicies();
 
         // === Authentication Services ===

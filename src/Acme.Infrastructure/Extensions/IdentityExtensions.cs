@@ -39,12 +39,10 @@ public static class IdentityExtensions
         return services;
     }
 
-    public static IServiceCollection AddOpenIddictAuth(
-        this IServiceCollection services,
-        IConfiguration configuration,
-        IHostEnvironment environment)
+    public static IServiceCollection AddOpenIddictAuth(this IServiceCollection services)
     {
-        services.AddOpenIddict()
+        services
+            .AddOpenIddict()
             .AddCore(options =>
             {
                 options.UseEntityFrameworkCore()
@@ -58,10 +56,6 @@ public static class IdentityExtensions
                 options.AllowPasswordFlow()
                        .AllowRefreshTokenFlow();
 
-                // Client authentication: Clients must provide client_id
-                // The 'react-app' client is registered in the database (see DatabaseSeeder)
-                // No client_secret required for public clients (SPAs)
-
                 options.RegisterScopes(
                     Scopes.OpenId,
                     Scopes.Profile,
@@ -70,30 +64,18 @@ public static class IdentityExtensions
                     "api"
                 );
 
-                // Token lifetimes - PRODUCTION READY
                 options.SetAccessTokenLifetime(TimeSpan.FromMinutes(15));
                 options.SetRefreshTokenLifetime(TimeSpan.FromDays(14));
                 options.SetAuthorizationCodeLifetime(TimeSpan.FromMinutes(5));
 
-                // Encryption & Signing Keys - Persistent in database
-                // These certificates are stored in the user profile and persist across restarts
-                // For production, replace with real X.509 certificates from Azure Key Vault
                 options.AddDevelopmentEncryptionCertificate()
                        .AddDevelopmentSigningCertificate();
-                
-                // FUTURE: Use real certificates from Key Vault
-                // var encryptionCert = LoadCertificateFromKeyVault(configuration["KeyVault:EncryptionCertThumbprint"]);
-                // var signingCert = LoadCertificateFromKeyVault(configuration["KeyVault:SigningCertThumbprint"]);
-                // options.AddEncryptionCertificate(encryptionCert)
-                //        .AddSigningCertificate(signingCert);
 
-                // Access token encryption - disabled for performance (HTTPS required)
                 options.DisableAccessTokenEncryption();
 
                 options.UseAspNetCore();
 
-                options.AddEventHandler<OpenIddict.Server.OpenIddictServerEvents.HandleTokenRequestContext>(builder =>
-                    builder.UseScopedHandler<Acme.Infrastructure.Auth.OpenIddict.PasswordGrantHandler>());
+                options.AddEventHandler<OpenIddict.Server.OpenIddictServerEvents.HandleTokenRequestContext>(builder => builder.UseScopedHandler<Auth.OpenIddict.PasswordGrantHandler>());
             })
             .AddValidation(options =>
             {
@@ -103,10 +85,8 @@ public static class IdentityExtensions
 
         services.AddAuthentication(options =>
         {
-            options.DefaultAuthenticateScheme =
-                OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
-            options.DefaultChallengeScheme =
-                OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
+            options.DefaultAuthenticateScheme = OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
         });
 
         services.AddAuthorization();
