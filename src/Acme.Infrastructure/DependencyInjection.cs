@@ -49,6 +49,10 @@ public static class DependencyInjection
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
+        services.AddOptions<OpenIddictSettings>()
+            .BindConfiguration("OpenIddict")
+            .ValidateOnStart();
+
         // === Identity & Authentication ===
         services.AddIdentity();
         services.AddOpenIddictAuth(environment);

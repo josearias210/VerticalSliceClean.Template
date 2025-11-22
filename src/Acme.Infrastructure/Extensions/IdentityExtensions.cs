@@ -67,12 +67,40 @@ public static class IdentityExtensions
                 options.SetRefreshTokenLifetime(TimeSpan.FromDays(14));
                 options.SetAuthorizationCodeLifetime(TimeSpan.FromMinutes(5));
 
-                options.AddDevelopmentEncryptionCertificate()
-                       .AddDevelopmentSigningCertificate();
-
+                // Certificate configuration based on environment
                 if (environment.IsDevelopment())
                 {
+                    // Development: Use ephemeral certificates
+                    options.AddDevelopmentEncryptionCertificate()
+                           .AddDevelopmentSigningCertificate();
+                    
                     options.DisableAccessTokenEncryption();
+                }
+                else
+                {
+                    // Production: Load certificates from configuration
+                    var openIddictSettings = services.BuildServiceProvider()
+                        .GetRequiredService<Microsoft.Extensions.Options.IOptions<Settings.OpenIddictSettings>>()
+                        .Value;
+
+                    if (!string.IsNullOrEmpty(openIddictSettings.EncryptionCertificatePath) &&
+                        !string.IsNullOrEmpty(openIddictSettings.SigningCertificatePath))
+                    {
+                        var encryptionCert = new System.Security.Cryptography.X509Certificates.X509Certificate2(
+                            openIddictSettings.EncryptionCertificatePath,
+                            openIddictSettings.CertificatePassword);
+
+                        var signingCert = new System.Security.Cryptography.X509Certificates.X509Certificate2(
+                            openIddictSettings.SigningCertificatePath,
+                            openIddictSettings.CertificatePassword);
+
+                        options.AddEncryptionCertificate(encryptionCert)
+                               .AddSigningCertificate(signingCert);
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException("OpenIddict certificate paths must be configured in production. Set 'OpenIddict:EncryptionCertificatePath' and 'OpenIddict:SigningCertificatePath' in configuration.");
+                    }
                 }
 
                 options.UseAspNetCore();
