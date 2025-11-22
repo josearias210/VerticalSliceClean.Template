@@ -40,8 +40,7 @@ public static class IdentityExtensions
     public static IServiceCollection AddOpenIddictAuth(this IServiceCollection services)
     {
         // 1️⃣ REGISTRA OAUTH2 / OIDC SERVER
-       services.AddControllers()
-            .AddApplicationPart(typeof(OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreOptions).Assembly);
+        services.AddControllers();
 
         services.AddOpenIddict()
             .AddCore(options =>
