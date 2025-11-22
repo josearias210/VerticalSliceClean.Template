@@ -58,9 +58,9 @@ public static class IdentityExtensions
                 options.AllowPasswordFlow()
                        .AllowRefreshTokenFlow();
 
-                // Accept anonymous clients (no client_id/client_secret required)
-                // For production with multiple clients, register them in the database
-                options.AcceptAnonymousClients();
+                // Client authentication: Clients must provide client_id
+                // The 'react-app' client is registered in the database (see DatabaseSeeder)
+                // No client_secret required for public clients (SPAs)
 
                 options.RegisterScopes(
                     Scopes.OpenId,

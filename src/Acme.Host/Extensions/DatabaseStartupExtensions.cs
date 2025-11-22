@@ -49,6 +49,10 @@ public static class DatabaseStartupExtensions
                 await sp.GetRequiredService<IDatabaseSeeder>().SeedAdminUserAsync(cancellationToken);
             }
 
+            // Seed OpenIddict client (react-app)
+            logger.LogInformation("Seeding OpenIddict clients...");
+            await sp.GetRequiredService<IDatabaseSeeder>().SeedOpenIddictClientAsync(cancellationToken);
+
             logger.LogInformation("Database initialization completed successfully.");
         }
         catch (Exception ex)

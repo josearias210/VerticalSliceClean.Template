@@ -5,18 +5,21 @@ using Acme.Infrastructure.Settings;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OpenIddict.Abstractions;
 
 namespace Acme.Infrastructure.Persistence.EF;
 
 public class DatabaseSeeder(
     RoleManager<IdentityRole> roleManager,
     UserManager<Account> userManager,
+    IOpenIddictApplicationManager applicationManager,
     ApplicationDbContext dbContext,
     IOptions<AdminUserSettings> adminUserOptions,
     ILogger<DatabaseSeeder> logger) : IDatabaseSeeder
 {
     private readonly RoleManager<IdentityRole> roleManager = roleManager;
     private readonly UserManager<Account> userManager = userManager;
+    private readonly IOpenIddictApplicationManager applicationManager = applicationManager;
     private readonly ApplicationDbContext dbContext = dbContext;
     private readonly AdminUserSettings adminUserSettings = adminUserOptions.Value;
     private readonly ILogger<DatabaseSeeder> logger = logger;
@@ -126,5 +129,45 @@ public class DatabaseSeeder(
         }
 
         logger.LogInformation("Successfully created admin user '{Email}' with role '{Role}'", email, adminRole);
+    }
+
+    public async Task SeedOpenIddictClientAsync(CancellationToken cancellationToken = default)
+    {
+        const string clientId = "react-app";
+
+        var existingClient = await applicationManager.FindByClientIdAsync(clientId, cancellationToken);
+        
+        if (existingClient != null)
+        {
+            logger.LogInformation("OpenIddict client '{ClientId}' already exists", clientId);
+            return;
+        }
+
+        await applicationManager.CreateAsync(new OpenIddictApplicationDescriptor
+        {
+            ClientId = clientId,
+            DisplayName = "React Application",
+            ClientType = OpenIddictConstants.ClientTypes.Public, // SPA = Public client (no secret)
+            
+            Permissions =
+            {
+                // Endpoints
+                OpenIddictConstants.Permissions.Endpoints.Token,
+                OpenIddictConstants.Permissions.Endpoints.Revocation,
+                
+                // Grant types
+                OpenIddictConstants.Permissions.GrantTypes.Password,
+                OpenIddictConstants.Permissions.GrantTypes.RefreshToken,
+                
+                // Scopes
+                OpenIddictConstants.Permissions.Prefixes.Scope + "api",
+                OpenIddictConstants.Permissions.Scopes.Email,
+                OpenIddictConstants.Permissions.Scopes.Profile,
+                OpenIddictConstants.Permissions.Scopes.Roles,
+                OpenIddictConstants.Permissions.Prefixes.Scope + OpenIddictConstants.Scopes.OfflineAccess
+            }
+        }, cancellationToken);
+
+        logger.LogInformation("Successfully created OpenIddict client '{ClientId}'", clientId);
     }
 }
