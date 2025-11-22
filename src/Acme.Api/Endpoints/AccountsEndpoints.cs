@@ -11,7 +11,9 @@ public sealed class AccountsEndpoints : IEndpoint
 {
     public void Map(IEndpointRouteBuilder app)
     {
-        var accounts = app.MapGroup("api/v1/accounts").RequireAuthorization();
+        var accounts = app.MapGroup("api/v1/accounts")
+            .RequireAuthorization()
+            .RequireRateLimiting("auth");
 
         accounts.MapPost("/", async (ISender sender, [FromBody] RegisterAccountCommand command, CancellationToken cancellationToken) => (await sender.Send(command, cancellationToken)).ToTypedResult());
     }

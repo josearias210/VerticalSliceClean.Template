@@ -13,11 +13,22 @@ public static class CorsExtensions
     {
         var corsSettings = corsOptions.CurrentValue;
         
-        services.AddCors(opts =>
-        {
             opts.AddPolicy(DefaultCorsPolicy, policy =>
             {
-                if (corsSettings.AllowedOrigins.Length > 0)
+                // Check if we have a wildcard origin
+                bool allowAnyOrigin = corsSettings.AllowedOrigins.Contains("*");
+
+                if (allowAnyOrigin)
+                {
+                    policy.AllowAnyOrigin()
+                          .WithHeaders(corsSettings.AllowedHeaders)
+                          .WithMethods(corsSettings.AllowedMethods)
+                          .WithExposedHeaders(corsSettings.ExposedHeaders)
+                          .SetPreflightMaxAge(TimeSpan.FromSeconds(corsSettings.MaxAgeSeconds));
+                    
+                    // CRITICAL: Cannot use AllowCredentials() with AllowAnyOrigin()
+                }
+                else if (corsSettings.AllowedOrigins.Length > 0)
                 {
                     policy.WithOrigins(corsSettings.AllowedOrigins)
                           .WithHeaders(corsSettings.AllowedHeaders)
@@ -27,12 +38,13 @@ public static class CorsExtensions
                     
                     if (corsSettings.AllowCredentials)
                     {
-                        policy.AllowCredentials(); // CRITICAL: Required for httpOnly cookies
+                        policy.AllowCredentials(); // Safe to use with specific origins
                     }
                 }
                 else
                 {
-                    policy.WithOrigins();
+                    // Fallback: deny all if no origins configured (safe default)
+                    policy.WithOrigins(); 
                 }
             });
         });

@@ -16,13 +16,20 @@ public static class SecurityHeadersExtensions
             headers["Referrer-Policy"] = "no-referrer";
             headers.XXSSProtection = "0";
 
-            headers.ContentSecurityPolicy =
-                "default-src 'self'; " +
-                "img-src 'self' data:; " +
-                "style-src 'self'; " +
-                "script-src 'self'; " +
-                "connect-src 'self'; " +
-                "font-src 'self'";
+            // Check if we should skip CSP for this request (e.g. docs)
+            bool skipCsp = ctx.Request.Path.StartsWithSegments("/scalar") ||
+                           ctx.Request.Path.StartsWithSegments("/openapi");
+
+            if (!skipCsp)
+            {
+                headers.ContentSecurityPolicy =
+                    "default-src 'self'; " +
+                    "img-src 'self' data:; " +
+                    "style-src 'self'; " +
+                    "script-src 'self'; " +
+                    "connect-src 'self'; " +
+                    "font-src 'self'";
+            }
 
             if (!env.IsDevelopment())
             {
@@ -30,20 +37,6 @@ public static class SecurityHeadersExtensions
             }
 
             await next();
-        });
-
-        // Disable CSP for documentation endpoints (Scalar, OpenAPI)
-        // These tools require inline scripts and styles to function
-        app.UseWhen(ctx => 
-            ctx.Request.Path.StartsWithSegments("/scalar") ||
-            ctx.Request.Path.StartsWithSegments("/openapi"),
-            branch =>
-        {
-            branch.Use(async (ctx, next) =>
-            {
-                ctx.Response.Headers.Remove("Content-Security-Policy");
-                await next();
-            });
         });
 
         return app;
