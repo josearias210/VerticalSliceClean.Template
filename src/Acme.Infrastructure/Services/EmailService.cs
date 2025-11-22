@@ -1,9 +1,3 @@
-// -----------------------------------------------------------------------
-// <copyright file="EmailService.cs" company="Acme">
-// Copyright (c) Acme. All rights reserved.
-// </copyright>
-// -----------------------------------------------------------------------
-
 namespace Acme.Infrastructure.Services;
 
 using Acme.Application.Abstractions;
@@ -15,54 +9,6 @@ using Microsoft.Extensions.Logging;
 /// </summary>
 public class EmailService(ILogger<EmailService> logger) : IEmailService
 {
-    private readonly ILogger<EmailService> logger = logger;
-
-    public Task SendEmailConfirmationAsync(string email, string confirmationToken, CancellationToken cancellationToken = default)
-    {
-        logger.LogInformation(
-            """
-            ===============================================
-            📧 EMAIL CONFIRMATION
-            ===============================================
-            To: {Email}
-            Subject: Confirm your email address
-            
-            Please confirm your email by clicking the link below:
-            
-            Confirmation Token: {Token}
-            
-            (In production, this would be a clickable URL)
-            ===============================================
-            """,
-            email,
-            confirmationToken);
-
-        return Task.CompletedTask;
-    }
-
-    public Task SendPasswordResetAsync(string email, string resetToken, CancellationToken cancellationToken = default)
-    {
-        logger.LogInformation(
-            """
-            ===============================================
-            🔐 PASSWORD RESET
-            ===============================================
-            To: {Email}
-            Subject: Reset your password
-            
-            You requested a password reset. Use the token below:
-            
-            Reset Token: {Token}
-            
-            (In production, this would be a clickable URL)
-            ===============================================
-            """,
-            email,
-            resetToken);
-
-        return Task.CompletedTask;
-    }
-
     public Task SendWelcomeWithPasswordAsync(string email, string temporaryPassword, CancellationToken cancellationToken = default)
     {
         logger.LogInformation(

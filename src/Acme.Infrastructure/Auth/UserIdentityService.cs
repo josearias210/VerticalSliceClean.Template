@@ -1,21 +1,13 @@
-// -----------------------------------------------------------------------
-// <copyright file="UserIdentityService.cs" company="Acme">
-// Copyright (c) Acme. All rights reserved.
-// </copyright>
-// -----------------------------------------------------------------------
-
 namespace Acme.Infrastructure.Auth;
 
 using Acme.Application.Abstractions;
 using Microsoft.AspNetCore.Http;
-using System.Security.Claims;
 
 public class UserIdentityService(IHttpContextAccessor httpContextAccessor) : IUserIdentityService
 {
-    private readonly IHttpContextAccessor httpContextAccessor = httpContextAccessor;
+    public bool IsAuthenticated => httpContextAccessor.HttpContext?.User?.Identity?.IsAuthenticated == true;
 
-    public string? GetUserId()
-    {
-        return httpContextAccessor.HttpContext?.User?.FindFirstValue("");
-    }
+    public string? UserId => httpContextAccessor.HttpContext?.User?.FindFirst("sub")?.Value; // o ClaimTypes.NameIdentifier
+
+    public string? UserName => httpContextAccessor.HttpContext?.User?.FindFirst("name")?.Value; // o ClaimTypes.Name
 }

@@ -1,19 +1,15 @@
 namespace Acme.Application.Features.Account.RegisterAccount;
 
 using FluentValidation;
+using static Acme.Application.Common.ErrorCodes;
 
-/// <summary>
-/// Validator for account registration.
-/// Validates email format, uniqueness, and role validity.
-/// Password is auto-generated and sent via email.
-/// </summary>
 public class RegisterAccountCommandValidator : AbstractValidator<RegisterAccountCommand>
 {
     public RegisterAccountCommandValidator()
     {
-        RuleFor(x => x.Email).NotEmpty();
-
-        // Password field is repurposed as Role
-        RuleFor(x => x.Password).NotEmpty();
+        RuleFor(x => x.FirstName).NotEmpty().WithErrorCode(Account.FirstNameEmpty);
+        RuleFor(x => x.Email).NotEmpty().WithErrorCode(Account.EmailEmpty);
+        RuleFor(x => x.Role).NotEmpty().WithErrorCode(Account.RoleEmpty);
+        RuleFor(x => x.Role).IsInEnum().WithErrorCode(Account.RoleInvalid);
     }
 }

@@ -1,27 +1,16 @@
 namespace Acme.Application.Common;
 
-/// <summary>
-/// Centralized error codes for consistent error handling across the application.
-/// Using constants ensures typo-free error codes and easier refactoring.
-/// </summary>
 public static class ErrorCodes
 {
-    /// <summary>
-    /// TodoItem entity related error codes (example domain errors).
-    /// </summary>
-    public static class TodoItem
+    public static class Account
     {
-        public const string NotFound = "TodoItem.NotFound";
-        public const string Forbidden = "TodoItem.Forbidden";
-        public const string InvalidOperation = "TodoItem.InvalidOperation";
+        public const string FirstNameEmpty = "Account.FirstName.Required";
+        public const string EmailEmpty = "Account.Email.Required";
+        public const string PasswordEmpty = "Account.Password.Required";
+        public const string RoleEmpty = "Account.Role.Required";
+        public const string RoleInvalid = "Account.Role.Invalid";
+        public const string CreateFailed = " Account.CreateFailed";
+        public const string RoleAssignFailed = " Account.RoleAssignFailed";
+        public const string EmailExists = " Account.EmailExists";
     }
-
-    // Add more domain-specific error code classes as your application grows
-    // Example:
-    // public static class Product
-    // {
-    //     public const string NotFound = "Product.NotFound";
-    //     public const string OutOfStock = "Product.OutOfStock";
-    //     public const string PriceInvalid = "Product.PriceInvalid";
-    // }
 }

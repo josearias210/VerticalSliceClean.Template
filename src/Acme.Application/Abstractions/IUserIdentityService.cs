@@ -2,5 +2,7 @@ namespace Acme.Application.Abstractions;
 
 public interface IUserIdentityService
 {
-    string? GetUserId();
+    string? UserId { get; }
+    string? UserName { get; }
+    bool IsAuthenticated { get; }
 }
