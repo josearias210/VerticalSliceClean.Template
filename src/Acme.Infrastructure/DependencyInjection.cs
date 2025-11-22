@@ -14,7 +14,7 @@ namespace Acme.Infrastructure;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration, IHostEnvironment environment)
     {
         services.AddHttpContextAccessor();
 
@@ -51,7 +51,7 @@ public static class DependencyInjection
 
         // === Identity & Authentication ===
         services.AddIdentity();
-        services.AddOpenIddictAuth();
+        services.AddOpenIddictAuth(configuration, environment);
         services.AddAuthorizationPolicies();
 
         // === Authentication Services ===
@@ -88,8 +88,7 @@ public static class DependencyInjection
                 });
 
             // Development-only: Enable detailed errors and sensitive data logging
-            var env = serviceProvider.GetRequiredService<IHostEnvironment>();
-            if (env.IsDevelopment())
+            if (environment.IsDevelopment())
             {
                 options.EnableSensitiveDataLogging();
                 options.EnableDetailedErrors();

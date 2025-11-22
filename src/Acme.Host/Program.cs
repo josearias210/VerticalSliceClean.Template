@@ -14,7 +14,7 @@ builder.Host.ConfigureSerilog();
 // Register services by layer
 builder.Services
     .AddApplication()
-    .AddInfrastructure(builder.Configuration)
+    .AddInfrastructure(builder.Configuration, builder.Environment)
     .AddPresentation()
     .AddHost(builder.Configuration);
 

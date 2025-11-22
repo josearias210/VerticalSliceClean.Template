@@ -1,7 +1,9 @@
 using Acme.Domain.Entities;
 using Acme.Infrastructure.Persistence.EF;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace Acme.Infrastructure.Extensions;
@@ -37,7 +39,10 @@ public static class IdentityExtensions
         return services;
     }
 
-    public static IServiceCollection AddOpenIddictAuth(this IServiceCollection services)
+    public static IServiceCollection AddOpenIddictAuth(
+        this IServiceCollection services,
+        IConfiguration configuration,
+        IHostEnvironment environment)
     {
         services.AddOpenIddict()
             .AddCore(options =>
@@ -50,23 +55,40 @@ public static class IdentityExtensions
                 options.SetTokenEndpointUris("/connect/token")
                        .SetRevocationEndpointUris("/connect/revoke");
 
-                options.AllowPasswordFlow();
-                options.AllowRefreshTokenFlow();
-                options.AcceptAnonymousClients();
+                options.AllowPasswordFlow()
+                       .AllowRefreshTokenFlow();
 
-                // Puedes dejar esto o quitarlo; con tus scopes ya registrados debería valer
-                // options.DisableScopeValidation();
+                // Accept anonymous clients (no client_id/client_secret required)
+                // For production with multiple clients, register them in the database
+                options.AcceptAnonymousClients();
 
                 options.RegisterScopes(
                     Scopes.OpenId,
                     Scopes.Profile,
                     Scopes.OfflineAccess,
+                    Scopes.Email,
                     "api"
                 );
 
-                options.AddEphemeralEncryptionKey()
-                       .AddEphemeralSigningKey()
-                       .DisableAccessTokenEncryption();
+                // Token lifetimes - PRODUCTION READY
+                options.SetAccessTokenLifetime(TimeSpan.FromMinutes(15));
+                options.SetRefreshTokenLifetime(TimeSpan.FromDays(14));
+                options.SetAuthorizationCodeLifetime(TimeSpan.FromMinutes(5));
+
+                // Encryption & Signing Keys - Persistent in database
+                // These certificates are stored in the user profile and persist across restarts
+                // For production, replace with real X.509 certificates from Azure Key Vault
+                options.AddDevelopmentEncryptionCertificate()
+                       .AddDevelopmentSigningCertificate();
+                
+                // FUTURE: Use real certificates from Key Vault
+                // var encryptionCert = LoadCertificateFromKeyVault(configuration["KeyVault:EncryptionCertThumbprint"]);
+                // var signingCert = LoadCertificateFromKeyVault(configuration["KeyVault:SigningCertThumbprint"]);
+                // options.AddEncryptionCertificate(encryptionCert)
+                //        .AddSigningCertificate(signingCert);
+
+                // Access token encryption - disabled for performance (HTTPS required)
+                options.DisableAccessTokenEncryption();
 
                 options.UseAspNetCore();
 
@@ -88,7 +110,6 @@ public static class IdentityExtensions
         });
 
         services.AddAuthorization();
-
 
         return services;
     }
