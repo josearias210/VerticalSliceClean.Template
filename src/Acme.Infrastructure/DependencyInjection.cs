@@ -109,8 +109,7 @@ public static class DependencyInjection
 
         // === Cross-cutting Concerns ===
         services.AddDefaultHealthChecks();
-        var corsOptionsMonitor = services.BuildServiceProvider().GetRequiredService<IOptionsMonitor<CorsSettings>>();
-        services.AddConfiguredCors(corsOptionsMonitor);
+        services.AddConfiguredCors();
 
         return services;
     }
