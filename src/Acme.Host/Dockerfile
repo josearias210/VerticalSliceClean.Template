@@ -5,22 +5,22 @@ FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
 # Copy solution and project files first (for layer caching)
-COPY ["Acme.slnx", "./"]
+COPY ["src/Acme.slnx", "./"]
 COPY ["Directory.Build.props", "./"]
 COPY ["Directory.Packages.props", "./"]
 
 # Copy all project files
-COPY ["Acme.Domain/Acme.Domain.csproj", "Acme.Domain/"]
-COPY ["Acme.Application/Acme.Application.csproj", "Acme.Application/"]
-COPY ["Acme.Infrastructure/Acme.Infrastructure.csproj", "Acme.Infrastructure/"]
-COPY ["Acme.Api/Acme.Api.csproj", "Acme.Api/"]
-COPY ["Acme.Host/Acme.Host.csproj", "Acme.Host/"]
+COPY ["src/Acme.Domain/Acme.Domain.csproj", "Acme.Domain/"]
+COPY ["src/Acme.Application/Acme.Application.csproj", "Acme.Application/"]
+COPY ["src/Acme.Infrastructure/Acme.Infrastructure.csproj", "Acme.Infrastructure/"]
+COPY ["src/Acme.Api/Acme.Api.csproj", "Acme.Api/"]
+COPY ["src/Acme.Host/Acme.Host.csproj", "Acme.Host/"]
 
 # Restore dependencies (cached layer if project files don't change)
 RUN dotnet restore "Acme.Host/Acme.Host.csproj"
 
-# Copy everything else
-COPY . .
+# Copy everything else from src
+COPY src/ .
 
 # Build and publish AppHost (which includes Api)
 WORKDIR "/src/Acme.Host"
