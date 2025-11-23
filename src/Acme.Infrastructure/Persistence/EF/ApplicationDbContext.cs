@@ -8,7 +8,7 @@ using OpenIddict.EntityFrameworkCore.Models;
 
 public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<Account>(options), IApplicationDbContext
 {
-    public const string Schema = "dbo";
+    public const string? Schema = null;
     public const string MigrationsHistoryTable = "__EFMigrationsHistory";
 
     public DbSet<OpenIddictEntityFrameworkCoreApplication> OpenIddictApplications => Set<OpenIddictEntityFrameworkCoreApplication>();

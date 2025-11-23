@@ -19,25 +19,24 @@ version: "3.9"
 
 services:
   # ---------------------------------------------------------------------------
-  # SQL Server 2022 (Developer Edition)
+  # PostgreSQL 16
   # ---------------------------------------------------------------------------
-  sqlserver:
-    image: mcr.microsoft.com/mssql/server:2022-latest
-    container_name: acme-sqlserver
+  postgres:
+    image: postgres:16-alpine
+    container_name: acme-postgres
     restart: unless-stopped
     ports:
-      - "${MSSQL_PORT:-1433}:1433"
+      - "${POSTGRES_PORT:-5432}:5432"
     environment:
-      ACCEPT_EULA: "Y"
-      SA_PASSWORD: ${MSSQL_SA_PASSWORD}
-      MSSQL_PID: "Developer"
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
     volumes:
-      - sqlserver_data:/var/opt/mssql
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"$${SA_PASSWORD}\" -C -Q \"SELECT 1\" || exit 1"]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
       timeout: 5s
-      retries: 10
+      retries: 5
 
   # ---------------------------------------------------------------------------
   # Jaeger - Distributed Tracing
@@ -101,7 +100,7 @@ services:
       retries: 10
 
 volumes:
-  sqlserver_data:
+  postgres_data:
     driver: local
   seq_data:
     driver: local

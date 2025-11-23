@@ -74,21 +74,21 @@ public static class DependencyInjection
         {
             var connectionString = configuration.GetConnectionString("DefaultConnection");
             
-            options.UseSqlServer(
+            options.UseNpgsql(
                 connectionString,
-                sqlOptions =>
+                npgsqlOptions =>
                 {
                     // Retry policy for transient failures (production resilience)
-                    sqlOptions.EnableRetryOnFailure(
+                    npgsqlOptions.EnableRetryOnFailure(
                         maxRetryCount: 3,
                         maxRetryDelay: TimeSpan.FromSeconds(5),
-                        errorNumbersToAdd: null);
+                        errorCodesToAdd: null);
                     
                     // Command timeout (30 seconds default)
-                    sqlOptions.CommandTimeout(30);
+                    npgsqlOptions.CommandTimeout(30);
                     
                     // Migrations history table configuration
-                    sqlOptions.MigrationsHistoryTable(
+                    npgsqlOptions.MigrationsHistoryTable(
                         ApplicationDbContext.MigrationsHistoryTable,
                         ApplicationDbContext.Schema);
                 });

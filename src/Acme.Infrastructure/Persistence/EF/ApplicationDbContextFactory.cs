@@ -41,12 +41,12 @@ public class ApplicationDbContextFactory : IDesignTimeDbContextFactory<Applicati
                 "or environment variables.");
         }
 
-        // Configure SQL Server with migrations history table
-        optionsBuilder.UseSqlServer(
+        // Configure PostgreSQL with migrations history table
+        optionsBuilder.UseNpgsql(
             connectionString,
-            sqlOptions =>
+            npgsqlOptions =>
             {
-                sqlOptions.MigrationsHistoryTable(
+                npgsqlOptions.MigrationsHistoryTable(
                     ApplicationDbContext.MigrationsHistoryTable,
                     ApplicationDbContext.Schema);
             });
