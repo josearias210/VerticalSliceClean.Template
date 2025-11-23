@@ -107,6 +107,13 @@ If you want to run the API from source (Visual Studio / VS Code) but keep infras
 - ✅ **Migrations** with distributed locking
 - ✅ **Auto-creation** of database on first run
 
+### **CI/CD** 🚀
+- ✅ **Single Workflow** (`build-api.yml`) for all build tasks
+- ✅ **Automated Tests** (`dotnet test`) before build
+- ✅ **Semantic Versioning** (Tags `v1.0.0` → Docker `1.0.0`)
+- ✅ **Manual Triggers** via GitHub Actions UI
+- 📄 **[Ver Documentación del Proceso de Build](docs/BUILD_PROCESS.md)**
+
 ---
 
 ## 🚀 Deployment
