@@ -11,8 +11,7 @@ public interface IEndpoint
 public static class EndpointsRegistration
 {
     /// <summary>
-    /// Registers all IEndpoint implementations using keyed services for better performance.
-    /// Avoids Activator.CreateInstance reflection on every call.
+    /// Registers all IEndpoint implementations as standard Singletons.
     /// </summary>
     public static IServiceCollection AddEndpoints(this IServiceCollection services)
     {
@@ -21,24 +20,22 @@ public static class EndpointsRegistration
 
         foreach (var type in endpointTypes)
         {
-            services.AddKeyedSingleton(typeof(IEndpoint), type.Name, type);
+            services.AddSingleton(typeof(IEndpoint), type);
         }
 
         return services;
     }
 
     /// <summary>
-    /// Maps all registered IEndpoint implementations to the route builder.
-    /// Uses keyed services for dependency resolution.
+    /// Maps all registered IEndpoint implementations using the DI container.
+    /// Avoids a second reflection pass.
     /// </summary>
     public static IEndpointRouteBuilder MapRoutes(this IEndpointRouteBuilder app)
     {
-        var asm = typeof(EndpointsRegistration).Assembly;
-        var endpointTypes = asm.DefinedTypes.Where(t => !t.IsAbstract && typeof(IEndpoint).IsAssignableFrom(t));
+        var endpoints = app.ServiceProvider.GetServices<IEndpoint>();
 
-        foreach (var type in endpointTypes)
+        foreach (var endpoint in endpoints)
         {
-            var endpoint = app.ServiceProvider.GetRequiredKeyedService<IEndpoint>(type.Name);
             endpoint.Map(app);
         }
         
