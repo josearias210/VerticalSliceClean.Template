@@ -1,5 +1,17 @@
 version: "3.9"
 
+# =============================================================================
+# Docker Compose - Producción
+# =============================================================================
+# Servicios: API + SQL Server + Caddy (Reverse Proxy)
+# 
+# Despliegue:
+#   docker compose -f docker-compose.production.yml up -d
+#
+# Ver logs:
+#   docker compose -f docker-compose.production.yml logs -f
+# =============================================================================
+
 services:
   # ============================================
   # SQL Server
@@ -43,17 +55,16 @@ services:
     container_name: acme-api-prod
     restart: unless-stopped
     ports:
-      - "8080:8080"   # HTTP
-      - "8081:8081"   # Metrics/Health
+      - "8080:8080"   # HTTP (Internal, exposed for debugging if needed, usually via Caddy)
     environment:
       # ASP.NET Core
       ASPNETCORE_ENVIRONMENT: "Production"
-      ASPNETCORE_URLS: "http://+:8080;http://+:8081"
+      ASPNETCORE_URLS: "http://+:8080"
       
       # Database
-      ConnectionStrings__DefaultConnection: "Server=sqlserver,1433;Database=${DB_NAME:-MyCompanyDbDb};User Id=sa;Password=${SQL_SA_PASSWORD};TrustServerCertificate=True;MultipleActiveResultSets=true"
+      ConnectionStrings__DefaultConnection: "Server=sqlserver,1433;Database=${DB_NAME:-AcmeDb};User Id=sa;Password=${SQL_SA_PASSWORD};TrustServerCertificate=True;MultipleActiveResultSets=true"
       
-      # JWT Settings (from secrets)
+      # JWT Settings
       JwtSettings__Key: ${JWT_SECRET_KEY}
       JwtSettings__Issuer: ${JWT_ISSUER:-Acme}
       JwtSettings__Audience: ${JWT_AUDIENCE:-Acme.Api}
@@ -70,8 +81,8 @@ services:
       Database__SeedAdminOnStartup: ${DB_SEED_ADMIN:-false}
       
       # CORS
-      Cors__AllowedOrigins__0: ${CORS_ORIGIN_1:-http://localhost:3000}
-      Cors__AllowedOrigins__1: ${CORS_ORIGIN_2:-https://yourdomain.com}
+      Cors__AllowedOrigins__0: ${CORS_ORIGIN_1:-https://yourdomain.com}
+      Cors__AllowedOrigins__1: ${CORS_ORIGIN_2:-https://www.yourdomain.com}
       
       # Logging (minimal for production)
       Logging__MinimumLevel: ${LOG_LEVEL:-Information}

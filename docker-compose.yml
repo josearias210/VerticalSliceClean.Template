@@ -3,7 +3,7 @@ version: "3.9"
 # =============================================================================
 # Docker Compose - Desarrollo Local
 # =============================================================================
-# Servicios: SQL Server + Jaeger (tracing) + Seq (logs)
+# Servicios: API + PostgreSQL + Jaeger + Seq
 # 
 # Inicio rápido:
 #   docker compose up -d
@@ -13,11 +13,56 @@ version: "3.9"
 #
 # Detener:
 #   docker compose down
-#
-# 📖 Guía completa: docs/DOCKER_LOCAL.md
 # =============================================================================
 
 services:
+  # ---------------------------------------------------------------------------
+  # API (Acme.Host)
+  # ---------------------------------------------------------------------------
+  api:
+    build:
+      context: .
+      dockerfile: src/Acme.Host/Dockerfile
+    container_name: acme-api-dev
+    restart: unless-stopped
+    ports:
+      - "${API_PORT:-8080}:8080"
+      - "${API_METRICS_PORT:-8081}:8081"
+    environment:
+      # ASP.NET Core
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: "http://+:8080;http://+:8081"
+      
+      # Database
+      ConnectionStrings__DefaultConnection: "Server=postgres;Port=5432;Database=${DB_NAME:-AcmeDb};User Id=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-postgres};"
+      
+      # JWT (Dev defaults)
+      JwtSettings__Key: ${JWT_SECRET_KEY:-SuperSecretKeyForDevelopmentOnly1234567890}
+      JwtSettings__Issuer: ${JWT_ISSUER:-Acme}
+      JwtSettings__Audience: ${JWT_AUDIENCE:-Acme.Api}
+      
+      # Logging
+      Logging__Seq__ServerUrl: "http://seq:5341"
+      Logging__Seq__ApiKey: ${SEQ_API_KEY:-}
+      
+      # OpenTelemetry
+      OpenTelemetry__OtlpEndpoint: "http://jaeger:4317"
+      OpenTelemetry__ServiceName: "Acme.Api"
+      
+      # CORS
+      Cors__AllowedOrigins__0: "http://localhost:3000"
+      
+    depends_on:
+      postgres:
+        condition: service_healthy
+      seq:
+        condition: service_healthy
+      jaeger:
+        condition: service_healthy
+    volumes:
+      - ${USERPROFILE}/.aspnet/https:/root/.aspnet/https:ro
+      - ${USERPROFILE}/.microsoft/usersecrets:/root/.microsoft/usersecrets:ro
+
   # ---------------------------------------------------------------------------
   # PostgreSQL 16
   # ---------------------------------------------------------------------------
@@ -30,6 +75,7 @@ services:
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${DB_NAME:-AcmeDb}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -54,14 +100,6 @@ services:
       COLLECTOR_OTLP_ENABLED: "true"
       SPAN_STORAGE_TYPE: "memory"
       MEMORY_MAX_TRACES: "10000"
-    deploy:
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 512M
-        reservations:
-          cpus: '0.25'
-          memory: 256M
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://localhost:14269/"]
       interval: 10s
@@ -82,17 +120,8 @@ services:
     environment:
       ACCEPT_EULA: "Y"
       SEQ_FIRSTRUN_ADMINPASSWORD: "${SEQ_ADMIN_PASSWORD:-Admin123!}"
-      SEQ_CACHE_SYSTEMRAMMB: "256"
     volumes:
       - seq_data:/data
-    deploy:
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 512M
-        reservations:
-          cpus: '0.25'
-          memory: 256M
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://localhost/health"]
       interval: 10s
