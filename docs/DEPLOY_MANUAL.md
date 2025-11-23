@@ -18,7 +18,8 @@ Para el despliegue, necesitas los siguientes archivos en el servidor:
 *   `.env` (basado en `.env.production.example`)
 *   `Caddyfile` (configuración del proxy)
 *   Carpetas para volúmenes (Docker las creará automáticamente, pero es bueno saberlo):
-    *   `sqlserver_data`
+    *   `postgres_data`
+    *   `postgres_backups`
     *   `caddy_data`
     *   `api_logs`
 
@@ -39,7 +40,7 @@ Para el despliegue, necesitas los siguientes archivos en el servidor:
     nano .env
     ```
     > [!IMPORTANT]
-    > Asegúrate de establecer contraseñas seguras para `SQL_SA_PASSWORD`, `JWT_SECRET_KEY` y `ADMIN_PASSWORD`.
+    > Asegúrate de establecer contraseñas seguras para `POSTGRES_PASSWORD`, `JWT_SECRET_KEY` y `ADMIN_PASSWORD`.
 
 ### 2. Iniciar Servicios
 
@@ -55,7 +56,7 @@ docker compose -f docker-compose.production.yml up -d
     ```bash
     docker compose -f docker-compose.production.yml ps
     ```
-    Deberías ver `acme-sqlserver-prod`, `acme-api-prod` y `acme-caddy-prod` en estado `Up`.
+    Deberías ver `acme-postgres-prod`, `acme-api-prod` y `acme-caddy-prod` en estado `Up`.
 
 2.  **Ver logs de la API**:
     ```bash
@@ -87,7 +88,7 @@ Para actualizar a una nueva versión de la aplicación:
 ## Solución de Problemas
 
 ### La API no conecta a la Base de Datos
-*   Verifica que `SQL_SA_PASSWORD` en el `.env` coincida con la configuración de la base de datos.
+*   Verifica que `POSTGRES_PASSWORD` en el `.env` coincida con la configuración de la base de datos.
 *   Revisa los logs: `docker compose -f docker-compose.production.yml logs api`.
 
 ### Error de Certificado SSL
@@ -98,5 +99,36 @@ Para actualizar a una nueva versión de la aplicación:
 *   Asegúrate de que el dominio apunte correctamente a la IP del servidor.
 
 ### La Base de Datos no inicia
-*   SQL Server requiere al menos 2GB de RAM. Verifica los recursos del servidor.
+*   Revisa los logs de Postgres: `docker compose -f docker-compose.production.yml logs postgres`.
 *   Revisa los permisos de la carpeta de volumen si persisten los problemas.
+
+## Copias de Seguridad y Recuperación
+
+El sistema incluye un servicio de **backup automático** (`acme-db-backup`) que realiza una copia completa de la base de datos cada 24 horas usando `pg_dump`.
+
+### Ubicación de los Backups
+Los archivos `.sql.gz` se almacenan en el volumen `postgres_backups`. En el host, esto suele estar en `/var/lib/docker/volumes/...` o en la carpeta local si configuraste un bind mount.
+
+### Restauración Manual
+
+Para restaurar una base de datos desde un backup:
+
+1.  **Identificar el archivo de backup**:
+    ```bash
+    # Listar backups disponibles
+    docker compose -f docker-compose.production.yml exec postgres ls -l /backups
+    ```
+
+2.  **Ejecutar comando de restauración**:
+    ```bash
+    # Descomprimir y restaurar (Reemplaza el nombre del archivo)
+    docker compose -f docker-compose.production.yml exec -T postgres sh -c "zcat /backups/AcmeDb_YYYY-MM-DD_HHMM.sql.gz | psql -U postgres -d AcmeDb"
+    ```
+    > ⚠️ **Advertencia**: Esto sobrescribirá los datos existentes si hay conflictos, pero `pg_dump` suele generar scripts que recrean tablas. Es recomendable borrar la DB antes si quieres una restauración limpia:
+    > `docker compose -f docker-compose.production.yml exec postgres psql -U postgres -c "DROP DATABASE \"AcmeDb\"; CREATE DATABASE \"AcmeDb\";"`
+
+### Forzar un Backup Manual
+Si necesitas hacer un backup en este momento:
+```bash
+docker compose -f docker-compose.production.yml exec db-backup /scripts/backup-db.sh
+```

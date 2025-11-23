@@ -103,7 +103,7 @@ If you want to run the API from source (Visual Studio / VS Code) but keep infras
 
 ### **Database** 💾
 - ✅ **EF Core 10**
-- ✅ **PostgreSQL** (Development) / **SQL Server** (Production ready)
+- ✅ **PostgreSQL 16** (Dev & Prod)
 - ✅ **Migrations** with distributed locking
 - ✅ **Auto-creation** of database on first run
 
