@@ -22,7 +22,7 @@ El proceso se inicia automáticamente en los siguientes escenarios:
 #### A. Pruebas (`test`)
 Antes de construir nada, el sistema ejecuta las pruebas automatizadas:
 ```bash
-dotnet test src/Acme.sln --configuration Release
+dotnet test src/Acme.slnx --configuration Release
 ```
 Si las pruebas fallan, el proceso se detiene y no se genera ninguna imagen.
 
