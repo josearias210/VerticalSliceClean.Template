@@ -1,15 +1,15 @@
 version: "3.9"
 
 # =============================================================================
-# Docker Compose - Producción
+# Docker Compose - VPS Deployment (Development & Production)
 # =============================================================================
-# Servicios: API + SQL Server + Caddy (Reverse Proxy)
-# 
-# Despliegue:
-#   docker compose -f docker-compose.production.yml up -d
+# Services: API + PostgreSQL + Caddy (Reverse Proxy)
 #
-# Ver logs:
-#   docker compose -f docker-compose.production.yml logs -f
+# Deployment:
+#   docker compose up -d
+#
+# View logs:
+#   docker compose logs -f
 # =============================================================================
 
 services:
@@ -40,7 +40,7 @@ services:
           cpus: '0.25'
           memory: 256M
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -84,55 +84,55 @@ services:
     container_name: acme-api-prod
     restart: unless-stopped
     ports:
-      - "8080:8080"   # HTTP (Internal, exposed for debugging if needed, usually via Caddy)
+      - "8080:8080" # HTTP (Internal, exposed for debugging if needed, usually via Caddy)
     environment:
       # ASP.NET Core
       ASPNETCORE_ENVIRONMENT: "Production"
       ASPNETCORE_URLS: "http://+:8080"
-      
+
       # Database
       ConnectionStrings__DefaultConnection: "Server=postgres;Port=5432;Database=${DB_NAME:-AcmeDb};User Id=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD};"
-      
+
       # JWT Settings
       JwtSettings__Key: ${JWT_SECRET_KEY}
       JwtSettings__Issuer: ${JWT_ISSUER:-Acme}
       JwtSettings__Audience: ${JWT_AUDIENCE:-Acme.Api}
       JwtSettings__AccessTokenMinutes: ${JWT_ACCESS_TOKEN_MINUTES:-15}
       JwtSettings__RefreshTokenDays: ${JWT_REFRESH_TOKEN_DAYS:-7}
-      
+
       # Admin User (initial setup)
       Admin__Email: ${ADMIN_EMAIL}
       Admin__Password: ${ADMIN_PASSWORD}
-      
+
       # Database initialization
       Database__ApplyMigrationsOnStartup: ${DB_APPLY_MIGRATIONS:-false}
       Database__SeedRolesOnStartup: ${DB_SEED_ROLES:-true}
       Database__SeedAdminOnStartup: ${DB_SEED_ADMIN:-false}
-      
+
       # CORS
       Cors__AllowedOrigins__0: ${CORS_ORIGIN_1:-https://yourdomain.com}
       Cors__AllowedOrigins__1: ${CORS_ORIGIN_2:-https://www.yourdomain.com}
-      
+
       # Logging (minimal for production)
       Logging__MinimumLevel: ${LOG_LEVEL:-Information}
       Logging__Seq__ServerUrl: ${SEQ_URL:-}
       Logging__Seq__ApiKey: ${SEQ_API_KEY:-}
-      
+
       # OpenTelemetry (disabled by default in production)
       OpenTelemetry__OtlpEndpoint: ${OTEL_ENDPOINT:-}
       OpenTelemetry__ServiceName: "Acme.Api"
       OpenTelemetry__ServiceVersion: ${APP_VERSION:-0.1.0}
-    
+
     volumes:
       - api_logs:/app/logs
-    
+
     networks:
       - acme-network
-    
+
     depends_on:
       postgres:
         condition: service_healthy
-    
+
     deploy:
       resources:
         limits:
@@ -141,9 +141,9 @@ services:
         reservations:
           cpus: '0.25'
           memory: 128M
-    
+
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -159,7 +159,7 @@ services:
     ports:
       - "80:80"
       - "443:443"
-      - "443:443/udp"  # HTTP/3
+      - "443:443/udp" # HTTP/3
     environment:
       DOMAIN: ${DOMAIN:-localhost}
       API_HOST: api:8080
