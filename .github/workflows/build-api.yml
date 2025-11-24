@@ -108,7 +108,7 @@ jobs:
   # ============================================
   release:
     name: Release ${{ matrix.environment || inputs.environment }}
-    if: (github.event.pull_request.merged == true) || (github.event_name == 'workflow_dispatch')
+    if: (github.event.pull_request.merged == true) || (github.event_name == 'workflow_dispatch' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'))
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 15  # Timeout optimization
