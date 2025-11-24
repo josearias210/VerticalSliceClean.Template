@@ -136,10 +136,10 @@ jobs:
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
             
             # Pull latest images (force download)
-            docker compose -f docker-compose.yml pull
+            docker compose pull
             
             # Restart services with new images
-            docker compose -f docker-compose.yml up -d
+            docker compose up -d
             
             # Logout from registry
             docker logout ghcr.io
@@ -164,7 +164,7 @@ jobs:
             done
             
             # Show running containers
-            docker compose -f docker-compose.yml ps
+            docker compose ps
             
             echo "🚀 Development deployment completed successfully!"
 
@@ -196,10 +196,10 @@ jobs:
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
             
             # Pull latest images (force download)
-            docker compose -f docker-compose.production.yml pull
+            docker compose pull
             
             # Restart services with new images
-            docker compose -f docker-compose.production.yml up -d
+            docker compose up -d
             
             # Logout from registry
             docker logout ghcr.io
@@ -224,6 +224,6 @@ jobs:
             done
             
             # Show running containers
-            docker compose -f docker-compose.production.yml ps
+            docker compose ps
             
             echo "🚀 Production deployment completed successfully!"

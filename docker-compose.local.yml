@@ -1,0 +1,135 @@
+version: "3.9"
+
+# =============================================================================
+# Docker Compose - Desarrollo Local
+# =============================================================================
+# Servicios: API + PostgreSQL + Jaeger + Seq
+# 
+# Inicio rápido:
+#   docker compose up -d
+#
+# Ver logs:
+#   docker compose logs -f
+#
+# Detener:
+#   docker compose down
+# =============================================================================
+
+services:
+  # ---------------------------------------------------------------------------
+  # API (Acme.Host)
+  # ---------------------------------------------------------------------------
+  api:
+    build:
+      context: .
+      dockerfile: src/Acme.Host/Dockerfile
+    container_name: acme-api-dev
+    restart: unless-stopped
+    ports:
+      - "${API_PORT:-8080}:8080"
+      - "${API_METRICS_PORT:-8081}:8081"
+    environment:
+      # ASP.NET Core
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: "http://+:8080;http://+:8081"
+      
+      # Database
+      ConnectionStrings__DefaultConnection: "Server=postgres;Port=5432;Database=${DB_NAME:-AcmeDb};User Id=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-postgres};"
+      
+      # JWT (Dev defaults)
+      JwtSettings__Key: ${JWT_SECRET_KEY:-SuperSecretKeyForDevelopmentOnly1234567890}
+      JwtSettings__Issuer: ${JWT_ISSUER:-Acme}
+      JwtSettings__Audience: ${JWT_AUDIENCE:-Acme.Api}
+      
+      # Logging
+      Logging__Seq__ServerUrl: "http://seq:5341"
+      Logging__Seq__ApiKey: ${SEQ_API_KEY:-}
+      
+      # OpenTelemetry
+      OpenTelemetry__OtlpEndpoint: "http://jaeger:4317"
+      OpenTelemetry__ServiceName: "Acme.Api"
+      
+      # CORS
+      Cors__AllowedOrigins__0: "http://localhost:3000"
+      
+    depends_on:
+      postgres:
+        condition: service_healthy
+      seq:
+        condition: service_healthy
+      jaeger:
+        condition: service_healthy
+    volumes:
+      - ${USERPROFILE}/.aspnet/https:/root/.aspnet/https:ro
+      - ${USERPROFILE}/.microsoft/usersecrets:/root/.microsoft/usersecrets:ro
+
+  # ---------------------------------------------------------------------------
+  # PostgreSQL 16
+  # ---------------------------------------------------------------------------
+  postgres:
+    image: postgres:16-alpine
+    container_name: acme-postgres
+    restart: unless-stopped
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${DB_NAME:-AcmeDb}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ---------------------------------------------------------------------------
+  # Jaeger - Distributed Tracing
+  # UI: http://localhost:16686
+  # ---------------------------------------------------------------------------
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: acme-jaeger
+    restart: unless-stopped
+    ports:
+      - "${JAEGER_UI_PORT:-16686}:16686"      # Jaeger UI
+      - "${JAEGER_OTLP_GRPC_PORT:-4317}:4317" # OTLP gRPC receiver
+      - "${JAEGER_OTLP_HTTP_PORT:-4318}:4318" # OTLP HTTP receiver
+    environment:
+      COLLECTOR_OTLP_ENABLED: "true"
+      SPAN_STORAGE_TYPE: "memory"
+      MEMORY_MAX_TRACES: "10000"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:14269/"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # ---------------------------------------------------------------------------
+  # Seq - Structured Logging
+  # UI: http://localhost:5341 (admin / Admin123!)
+  # ---------------------------------------------------------------------------
+  seq:
+    image: datalust/seq:latest
+    container_name: acme-seq
+    restart: unless-stopped
+    ports:
+      - "${SEQ_UI_PORT:-5341}:80"           # Seq UI
+      - "${SEQ_INGESTION_PORT:-5342}:5341"  # Ingestion API
+    environment:
+      ACCEPT_EULA: "Y"
+      SEQ_FIRSTRUN_ADMINPASSWORD: "${SEQ_ADMIN_PASSWORD:-Admin123!}"
+    volumes:
+      - seq_data:/data
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  postgres_data:
+    driver: local
+  seq_data:
+    driver: local

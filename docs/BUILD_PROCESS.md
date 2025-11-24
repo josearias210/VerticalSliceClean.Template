@@ -181,7 +181,7 @@ VPS_DOMAIN = api.myapi.com
 ### Requisitos del VPS
 
 Cada VPS debe tener en el path configurado (default: `/opt/acme`):
-- `docker-compose.production.yml`
+- `docker-compose.yml`
 - `.env` (con variables del entorno correspondiente)
 - `Caddyfile`
 

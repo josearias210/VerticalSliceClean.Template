@@ -31,7 +31,7 @@ The easiest way to run the application is using Docker Compose, which sets up th
 
 3.  **Start Services**:
     ```bash
-    docker compose up -d
+    docker compose -f docker-compose.local.yml up -d
     ```
 
 4.  **Access Services**:
@@ -45,7 +45,7 @@ If you want to run the API from source (Visual Studio / VS Code) but keep infras
 
 1.  **Start only infrastructure**:
     ```bash
-    docker compose up postgres seq jaeger -d
+    docker compose -f docker-compose.local.yml up postgres seq jaeger -d
     ```
 
 2.  **Configure User Secrets** (Recommended for sensitive data):
@@ -124,8 +124,8 @@ We provide a comprehensive guide for deploying to production using Docker Compos
 📖 **[Read the Deployment Guide](docs/DEPLOY_MANUAL.md)**
 
 ### Configuration Files
-- **`docker-compose.yml`**: Development environment (Postgres, API, Tools).
-- **`docker-compose.production.yml`**: Production environment (SQL Server, Caddy, API).
+- **`docker-compose.local.yml`**: Local development environment (Postgres, API, Seq, Jaeger).
+- **`docker-compose.yml`**: VPS deployment (Development & Production environments).
 - **`.env.example`**: Template for development environment variables.
 - **`.env.production.example`**: Template for production environment variables.
 - **`secrets.json.example`**: Template for User Secrets (Local Development).
@@ -142,8 +142,8 @@ Acme/
 │   ├── Acme.Infrastructure/# Data & Services
 │   └── Acme.Domain/        # Entities
 ├── docs/                   # Documentation
-├── docker-compose.yml      # Dev Infrastructure
-├── docker-compose.production.yml # Prod Infrastructure
+├── docker-compose.local.yml    # Local Dev Infrastructure
+├── docker-compose.yml          # VPS Deployment (Dev & Prod)
 └── README.md
 ```
 
