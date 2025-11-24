@@ -1,10 +1,10 @@
 name: Build and Publish API
 
 on:
-  # Trigger on PR merge (Develop/Master)
+  # Trigger on PR merge (Develop/Main)
   pull_request:
     types: [closed]
-    branches: [ "master", "develop" ]
+    branches: [ "main", "develop" ]
     paths:
       - 'src/**'
       - 'Dockerfile'
@@ -12,6 +12,15 @@ on:
   
   # Trigger on Manual Run
   workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target Environment'
+        required: true
+        default: 'development'
+        type: choice
+        options:
+        - development
+        - production
 
   # Trigger on SemVer Tags (v1.0.0, v2.1.0-rc1)
   push:
@@ -24,7 +33,7 @@ env:
 
 # Concurrency Control: Prevent simultaneous deployments to same environment
 concurrency:
-  group: deploy-${{ github.event.pull_request.base.ref }}
+  group: deploy-${{ github.event.pull_request.base.ref || github.event.inputs.environment || github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -72,7 +81,7 @@ jobs:
             type=sha
             
             # Latest tag logic
-            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/master' }}
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
 
       # Dynamic Environment Variables Optimization
       - name: Set build metadata
@@ -98,8 +107,8 @@ jobs:
   # Job 2: Release to VPS
   # ============================================
   release:
-    name: Release ${{ matrix.environment }}
-    if: (github.event.pull_request.base.ref == 'develop' || github.event.pull_request.base.ref == 'master') && github.event.pull_request.merged == true
+    name: Release ${{ matrix.environment || inputs.environment }}
+    if: (github.event.pull_request.merged == true) || (github.event_name == 'workflow_dispatch')
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 15  # Timeout optimization
@@ -108,15 +117,15 @@ jobs:
         include:
           - branch: develop
             environment: development
-          - branch: master
+          - branch: main
             environment: production
     environment:
-      name: ${{ matrix.environment }}
+      name: ${{ matrix.environment || inputs.environment }}
       url: https://${{ secrets.VPS_DOMAIN }}
     
     steps:
-      - name: Deploy to ${{ matrix.environment }} VPS via SSH
-        if: github.event.pull_request.base.ref == matrix.branch
+      - name: Deploy to ${{ matrix.environment || inputs.environment }} VPS via SSH
+        if: (github.event_name == 'pull_request' && github.event.pull_request.base.ref == matrix.branch) || (github.event_name == 'workflow_dispatch' && matrix.environment == inputs.environment)
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VPS_HOST }}
