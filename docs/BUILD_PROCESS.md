@@ -58,9 +58,23 @@ URL típica: `ghcr.io/usuario/acme-api:etiqueta`
 
 ---
 
-## 6. Deployment Automático a VPS
+## 6. Deployment Automático y Manual
 
-El sistema soporta **dos entornos** con deployment automático usando un único job parametrizado:
+El sistema soporta deployment automático (CI/CD) y ejecución manual.
+
+### Deployment Automático
+-   **Development**: Al hacer merge a `develop`.
+-   **Production**: Al hacer merge a `main`.
+
+### Deployment Manual
+Puedes ejecutar el deployment manualmente desde GitHub Actions:
+1.  Ve a la pestaña **Actions**.
+2.  Selecciona el workflow **Build and Publish API**.
+3.  Click en **Run workflow**.
+4.  Selecciona el **Target Environment** (`development` o `production`).
+5.  Click en el botón verde **Run workflow**.
+
+### Detalles por Entorno
 
 ### Entorno de Desarrollo
 -   **Trigger**: Merge a `develop`
@@ -68,7 +82,7 @@ El sistema soporta **dos entornos** con deployment automático usando un único 
 -   **Secrets**: Configurados en environment `development`
 
 ### Entorno de Producción
--   **Trigger**: Merge a `master`
+-   **Trigger**: Merge a `main`
 -   **Environment**: `production` (GitHub)
 -   **Secrets**: Configurados en environment `production`
 
