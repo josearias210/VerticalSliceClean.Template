@@ -4,4 +4,5 @@
   <Project Path="Acme.Host\Acme.Host.csproj" />
   <Project Path="Acme.Infrastructure\Acme.Infrastructure.csproj" />
   <Project Path="Acme.Application\Acme.Application.csproj" />
+  <Project Path="..\tests\Acme.Application.Tests\Acme.Application.Tests.csproj" />
 </Solution>
