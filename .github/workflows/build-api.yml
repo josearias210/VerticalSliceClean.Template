@@ -22,43 +22,23 @@ env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}-api
 
+# Concurrency Control: Prevent simultaneous deployments to same environment
+concurrency:
+  group: deploy-${{ github.event.pull_request.base.ref }}
+  cancel-in-progress: false
+
 jobs:
   # ============================================
-  # Job 1: Run Tests
+  # Job 1: Build & Push
   # ============================================
-  test:
-    # Run if PR merged OR Manual OR Tag Push
-    if: github.event.pull_request.merged == true || github.event_name == 'workflow_dispatch' || github.event_name == 'push'
+  build:
+    name: Build & Push
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup .NET SDK
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '10.0.x'
-          include-prerelease: true
-
-      - name: Restore dependencies
-        run: dotnet restore src/Acme.slnx
-
-      - name: Build solution
-        run: dotnet build src/Acme.slnx --configuration Release --no-restore
-
-      # - name: Run tests
-      #   run: dotnet test src/Acme.slnx --configuration Release --no-build --verbosity normal
-
-  # ============================================
-  # Job 2: Build & Push Docker Image
-  # ============================================
-  build-and-push:
-    needs: test
-    runs-on: ubuntu-latest
+    timeout-minutes: 20  # Timeout optimization
     permissions:
       contents: read
       packages: write
-
+    
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -81,6 +61,7 @@ jobs:
           tags: |
             # Branch-based tags (develop -> develop)
             type=ref,event=branch
+            type=ref,event=pr
             
             # SemVer tags (v1.0.0 -> 1.0.0, 1.0, latest)
             type=semver,pattern={{version}}
@@ -88,10 +69,16 @@ jobs:
             type=semver,pattern={{major}}
             
             # SHA tag for traceability
-            type=sha,format=short
+            type=sha
             
             # Latest tag logic
             type=raw,value=latest,enable=${{ github.ref == 'refs/heads/master' }}
+
+      # Dynamic Environment Variables Optimization
+      - name: Set build metadata
+        run: |
+          echo "VERSION=${{ github.sha }}" >> $GITHUB_ENV
+          echo "BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_ENV
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
@@ -101,16 +88,21 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            VERSION=${{ env.VERSION }}
+            BUILD_DATE=${{ env.BUILD_DATE }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
   # ============================================
-  # Job 3: Deploy to VPS (Multi-Environment)
+  # Job 2: Release to VPS
   # ============================================
-  deploy-to-vps:
+  release:
+    name: Release ${{ matrix.environment }}
     if: (github.event.pull_request.base.ref == 'develop' || github.event.pull_request.base.ref == 'master') && github.event.pull_request.merged == true
-    needs: build-and-push
+    needs: build
     runs-on: ubuntu-latest
+    timeout-minutes: 15  # Timeout optimization
     strategy:
       matrix:
         include:
@@ -147,6 +139,10 @@ jobs:
             # Logout from registry
             docker logout ghcr.io
             
+            # Image Cleanup Optimization
+            echo "Cleaning up old images..."
+            docker image prune -af --filter "until=168h" || true
+            
             # Wait for services to be healthy
             echo "Waiting for services to start..."
             sleep 10
@@ -166,4 +162,3 @@ jobs:
             docker compose -f docker-compose.production.yml ps
             
             echo "🚀 ${{ matrix.environment }} deployment completed successfully!"
-

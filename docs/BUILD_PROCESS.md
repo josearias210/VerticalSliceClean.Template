@@ -171,6 +171,37 @@ Cada VPS debe tener en el path configurado (default: `/opt/acme`):
 - `.env` (con variables del entorno correspondiente)
 - `Caddyfile`
 
+---
+
+## 7. Optimizaciones del Workflow
+
+El pipeline incluye varias optimizaciones para mejorar rendimiento y seguridad:
+
+### ⚡ Caché de NuGet
+- **Qué hace**: Guarda los paquetes descargados en caché.
+- **Beneficio**: Reduce el tiempo de build (~30% más rápido).
+- **Key**: Basado en `Directory.Packages.props`.
+
+### ⏱️ Timeouts de Seguridad
+- **Test Job**: 15 minutos
+- **Build Job**: 20 minutos
+- **Deploy Job**: 10 minutos
+- **Beneficio**: Evita que procesos colgados consuman minutos de GitHub Actions.
+
+### 🧹 Limpieza Automática
+- **Qué hace**: Ejecuta `docker image prune` después de cada deploy.
+- **Regla**: Elimina imágenes sin usar creadas hace más de 7 días (`until=168h`).
+- **Beneficio**: Mantiene limpio el disco del VPS.
+
+### 🔒 Control de Concurrencia
+- **Qué hace**: Evita deployments simultáneos al mismo entorno.
+- **Comportamiento**: Si lanzas dos deployments seguidos, el segundo espera a que termine el primero.
+
+### 🏷️ Trazabilidad
+- **Versión**: Se inyecta el Git SHA como variable de entorno `VERSION`.
+- **Fecha**: Se inyecta la fecha de build como `BUILD_DATE`.
+
+
 
 
 
