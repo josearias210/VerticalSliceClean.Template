@@ -32,7 +32,7 @@ jobs:
   # Job 1: Build & Push
   # ============================================
   build:
-    name: Build & Push
+    name: Build
     runs-on: ubuntu-latest
     timeout-minutes: 20  # Timeout optimization
     permissions:
@@ -109,27 +109,79 @@ jobs:
           cache-to: type=gha,mode=max
 
   # ============================================
-  # Job 2: Release to VPS
+  # Job 2: Release Development
   # ============================================
-  release:
-    name: Release ${{ matrix.environment }}
-    if: (github.event.pull_request.merged == true) || (github.event_name == 'workflow_dispatch' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'))
+  release-development:
+    name: Release Development
+    if: (github.event_name == 'pull_request' && github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'develop') || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/develop')
     needs: build
     runs-on: ubuntu-latest
-    timeout-minutes: 15  # Timeout optimization
-    strategy:
-      matrix:
-        include:
-          - branch: develop
-            environment: development
-          - branch: main
-            environment: production
+    timeout-minutes: 15
     environment:
-      name: ${{ matrix.environment }}
+      name: development
     
     steps:
-      - name: Deploy to ${{ matrix.environment }} VPS via SSH
-        if: (github.event_name == 'pull_request' && github.event.pull_request.base.ref == matrix.branch) || (github.event_name == 'workflow_dispatch' && github.ref == format('refs/heads/{0}', matrix.branch))
+      - name: Deploy to Development VPS via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          script: |
+            set -e
+            cd ${{ secrets.VPS_PATH || '/opt/acme' }}
+            
+            # Login to GitHub Container Registry
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            
+            # Pull latest images (force download)
+            docker compose -f docker-compose.yml pull
+            
+            # Restart services with new images
+            docker compose -f docker-compose.yml up -d
+            
+            # Logout from registry
+            docker logout ghcr.io
+            
+            # Image Cleanup Optimization
+            echo "Cleaning up old images..."
+            docker image prune -af --filter "until=168h" || true
+            
+            # Wait for services to be healthy
+            echo "Waiting for services to start..."
+            sleep 10
+            
+            # Check API health
+            CONTAINER_NAME="${{ secrets.CONTAINER_NAME || 'acme-api-dev' }}"
+            for i in {1..30}; do
+              if docker exec $CONTAINER_NAME curl -f http://localhost:8080/health > /dev/null 2>&1; then
+                echo "✅ Development API is healthy!"
+                break
+              fi
+              echo "Waiting for API... ($i/30)"
+              sleep 2
+            done
+            
+            # Show running containers
+            docker compose -f docker-compose.yml ps
+            
+            echo "🚀 Development deployment completed successfully!"
+
+  # ============================================
+  # Job 3: Release Production
+  # ============================================
+  release-production:
+    name: Release Production
+    if: (github.event_name == 'pull_request' && github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main') || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main')
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: production
+    
+    steps:
+      - name: Deploy to Production VPS via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VPS_HOST }}
@@ -164,7 +216,7 @@ jobs:
             CONTAINER_NAME="${{ secrets.CONTAINER_NAME || 'acme-api-prod' }}"
             for i in {1..30}; do
               if docker exec $CONTAINER_NAME curl -f http://localhost:8080/health > /dev/null 2>&1; then
-                echo "✅ ${{ matrix.environment }} API is healthy!"
+                echo "✅ Production API is healthy!"
                 break
               fi
               echo "Waiting for API... ($i/30)"
@@ -174,4 +226,4 @@ jobs:
             # Show running containers
             docker compose -f docker-compose.production.yml ps
             
-            echo "🚀 ${{ matrix.environment }} deployment completed successfully!"
+            echo "🚀 Production deployment completed successfully!"
