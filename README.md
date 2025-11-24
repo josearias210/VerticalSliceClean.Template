@@ -119,7 +119,7 @@ If you want to run the API from source (Visual Studio / VS Code) but keep infras
 ## 🚀 Deployment
 
 ### Manual Production Deployment
-We provide a comprehensive guide for deploying to production using Docker Compose with SQL Server and Caddy (Reverse Proxy).
+We provide a comprehensive guide for deploying to production using Docker Compose with PostgreSQL and Caddy (Reverse Proxy).
 
 📖 **[Read the Deployment Guide](docs/DEPLOY_MANUAL.md)**
 

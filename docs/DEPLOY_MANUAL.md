@@ -1,134 +1,134 @@
-# Guía de Despliegue Manual (Producción)
+# Manual Deployment Guide (Production)
 
-Esta guía describe los pasos necesarios para desplegar la aplicación **Acme** en un entorno de producción utilizando Docker Compose.
+This guide describes the steps needed to deploy the **Acme** application to a production environment using Docker Compose.
 
-## Prerrequisitos
+## Prerequisites
 
-Asegúrate de tener instalado lo siguiente en el servidor:
+Make sure you have the following installed on the server:
 
 *   **Docker Engine** (v20.10+)
 *   **Docker Compose Plugin** (v2.0+)
-*   **Git** (opcional, para clonar el repo)
+*   **Git** (optional, to clone the repo)
 
-## Estructura de Archivos
+## File Structure
 
-Para el despliegue, necesitas los siguientes archivos en el servidor:
+For deployment, you need the following files on the server:
 
-*   `docker-compose.production.yml`
-*   `.env` (basado en `.env.production.example`)
-*   `Caddyfile` (configuración del proxy)
-*   Carpetas para volúmenes (Docker las creará automáticamente, pero es bueno saberlo):
+*   `docker-compose.yml`
+*   `.env` (based on `.env.production.example`)
+*   `Caddyfile` (proxy configuration)
+*   Folders for volumes (Docker will create them automatically, but it's good to know):
     *   `postgres_data`
     *   `postgres_backups`
     *   `caddy_data`
     *   `api_logs`
 
-## Pasos de Despliegue
+## Deployment Steps
 
-### 1. Preparar el Entorno
+### 1. Prepare the Environment
 
-1.  **Clonar el repositorio** (o copiar los archivos necesarios):
+1.  **Clone the repository** (or copy the necessary files):
     ```bash
     git clone https://github.com/josearias210/Acme.git
     cd Acme
     ```
 
-2.  **Configurar Variables de Entorno**:
-    Copia el archivo de ejemplo y edítalo con tus valores reales (contraseñas, dominios, etc.).
+2.  **Configure Environment Variables**:
+    Copy the example file and edit it with your real values (passwords, domains, etc.).
     ```bash
     cp .env.production.example .env
     nano .env
     ```
     > [!IMPORTANT]
-    > Asegúrate de establecer contraseñas seguras para `POSTGRES_PASSWORD`, `JWT_SECRET_KEY` y `ADMIN_PASSWORD`.
+    > Make sure to set secure passwords for `POSTGRES_PASSWORD`, `JWT_SECRET_KEY`, and `ADMIN_PASSWORD`.
 
-### 2. Iniciar Servicios
+### 2. Start Services
 
-Ejecuta el siguiente comando para descargar las imágenes e iniciar los contenedores en segundo plano:
+Run the following command to download images and start containers in the background:
 
 ```bash
 docker compose up -d
 ```
 
-### 3. Verificar el Estado
+### 3. Verify Status
 
-1.  **Comprobar contenedores activos**:
+1.  **Check active containers**:
     ```bash
     docker compose ps
     ```
-    Deberías ver `acme-postgres-prod`, `acme-api-prod` y `acme-caddy-prod` en estado `Up`.
+    You should see `acme-postgres-prod`, `acme-api-prod`, and `acme-caddy-prod` in `Up` status.
 
-2.  **Ver logs de la API**:
+2.  **View API logs**:
     ```bash
     docker compose logs -f api
     ```
 
-3.  **Verificar conexión**:
-    Abre tu navegador y visita `https://api.yourdomain.com/health` (o el dominio que hayas configurado). Debería responder `Healthy`.
+3.  **Verify connection**:
+    Open your browser and visit `https://api.yourdomain.com/health` (or the domain you configured). It should respond `Healthy`.
 
-## Actualización
+## Update
 
-Para actualizar a una nueva versión de la aplicación:
+To update to a new version of the application:
 
-1.  **Descargar la última imagen**:
+1.  **Download the latest image**:
     ```bash
     docker compose pull
     ```
 
-2.  **Reiniciar los servicios** (solo se recrearán los que hayan cambiado):
+2.  **Restart services** (only changed ones will be recreated):
     ```bash
     docker compose up -d
     ```
 
-3.  **Limpiar imágenes antiguas** (opcional):
+3.  **Clean old images** (optional):
     ```bash
     docker image prune -f
     ```
 
-## Solución de Problemas
+## Troubleshooting
 
-### La API no conecta a la Base de Datos
-*   Verifica que `POSTGRES_PASSWORD` en el `.env` coincida con la configuración de la base de datos.
-*   Revisa los logs: `docker compose logs api`.
+### API Cannot Connect to Database
+*   Verify that `POSTGRES_PASSWORD` in `.env` matches the database configuration.
+*   Check the logs: `docker compose logs api`.
 
-### Error de Certificado SSL
-*   Caddy gestiona automáticamente los certificados. Si hay problemas, revisa los logs de Caddy:
+### SSL Certificate Error
+*   Caddy automatically manages certificates. If there are issues, check Caddy logs:
     ```bash
     docker compose logs caddy
     ```
-*   Asegúrate de que el dominio apunte correctamente a la IP del servidor.
+*   Make sure the domain points correctly to the server IP.
 
-### La Base de Datos no inicia
-*   Revisa los logs de Postgres: `docker compose logs postgres`.
-*   Revisa los permisos de la carpeta de volumen si persisten los problemas.
+### Database Won't Start
+*   Check Postgres logs: `docker compose logs postgres`.
+*   Check volume folder permissions if problems persist.
 
-## Copias de Seguridad y Recuperación
+## Backup and Recovery
 
-El sistema incluye un servicio de **backup automático** (`acme-db-backup`) que realiza una copia completa de la base de datos cada 24 horas usando `pg_dump`.
+The system includes an **automatic backup** service (`acme-db-backup`) that performs a complete database backup every 24 hours using `pg_dump`.
 
-### Ubicación de los Backups
-Los archivos `.sql.gz` se almacenan en el volumen `postgres_backups`. En el host, esto suele estar en `/var/lib/docker/volumes/...` o en la carpeta local si configuraste un bind mount.
+### Backup Location
+`.sql.gz` files are stored in the `postgres_backups` volume. On the host, this is usually in `/var/lib/docker/volumes/...` or in the local folder if you configured a bind mount.
 
-### Restauración Manual
+### Manual Restoration
 
-Para restaurar una base de datos desde un backup:
+To restore a database from a backup:
 
-1.  **Identificar el archivo de backup**:
+1.  **Identify the backup file**:
     ```bash
-    # Listar backups disponibles
+    # List available backups
     docker compose exec postgres ls -l /backups
     ```
 
-2.  **Ejecutar comando de restauración**:
+2.  **Run restoration command**:
     ```bash
-    # Descomprimir y restaurar (Reemplaza el nombre del archivo)
+    # Decompress and restore (Replace the filename)
     docker compose exec -T postgres sh -c "zcat /backups/AcmeDb_YYYY-MM-DD_HHMM.sql.gz | psql -U postgres -d AcmeDb"
     ```
-    > ⚠️ **Advertencia**: Esto sobrescribirá los datos existentes si hay conflictos, pero `pg_dump` suele generar scripts que recrean tablas. Es recomendable borrar la DB antes si quieres una restauración limpia:
+    > ⚠️ **Warning**: This will overwrite existing data if there are conflicts, but `pg_dump` usually generates scripts that recreate tables. It's recommended to drop the DB first if you want a clean restore:
     > `docker compose exec postgres psql -U postgres -c "DROP DATABASE \"AcmeDb\"; CREATE DATABASE \"AcmeDb\";"`
 
-### Forzar un Backup Manual
-Si necesitas hacer un backup en este momento:
+### Force Manual Backup
+If you need to make a backup right now:
 ```bash
 docker compose exec db-backup /scripts/backup-db.sh
 ```
