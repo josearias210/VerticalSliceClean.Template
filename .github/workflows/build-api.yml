@@ -121,7 +121,6 @@ jobs:
             environment: production
     environment:
       name: ${{ matrix.environment || inputs.environment }}
-      url: https://${{ secrets.VPS_DOMAIN }}
     
     steps:
       - name: Deploy to ${{ matrix.environment || inputs.environment }} VPS via SSH
