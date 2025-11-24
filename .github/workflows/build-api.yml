@@ -3,7 +3,7 @@ name: Build and Publish API
 on:
   # Trigger on PR merge (Develop/Main)
   pull_request:
-    types: [closed]
+    types: [opened, synchronize, reopened, closed]
     branches: [ "main", "develop" ]
     paths:
       - 'src/**'
