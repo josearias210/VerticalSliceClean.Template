@@ -1,4 +1,4 @@
-name: Build and Publish API
+name: Build and Publish API (v2)
 
 on:
   # Trigger on PR merge (Develop/Main)
@@ -12,15 +12,6 @@ on:
   
   # Trigger on Manual Run
   workflow_dispatch:
-    inputs:
-      environment:
-        description: 'Target Environment'
-        required: true
-        default: 'development'
-        type: choice
-        options:
-        - development
-        - production
 
   # Trigger on SemVer Tags (v1.0.0, v2.1.0-rc1)
   push:
@@ -33,7 +24,7 @@ env:
 
 # Concurrency Control: Prevent simultaneous deployments to same environment
 concurrency:
-  group: deploy-${{ github.event.pull_request.base.ref || github.event.inputs.environment || github.ref }}
+  group: deploy-${{ github.event.pull_request.base.ref || github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -118,7 +109,7 @@ jobs:
   # Job 2: Release to VPS
   # ============================================
   release:
-    name: Release ${{ matrix.environment || inputs.environment }}
+    name: Release ${{ matrix.environment }}
     if: (github.event.pull_request.merged == true) || (github.event_name == 'workflow_dispatch' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'))
     needs: build
     runs-on: ubuntu-latest
@@ -131,11 +122,11 @@ jobs:
           - branch: main
             environment: production
     environment:
-      name: ${{ matrix.environment || inputs.environment }}
+      name: ${{ matrix.environment }}
     
     steps:
-      - name: Deploy to ${{ matrix.environment || inputs.environment }} VPS via SSH
-        if: (github.event_name == 'pull_request' && github.event.pull_request.base.ref == matrix.branch) || (github.event_name == 'workflow_dispatch' && matrix.environment == inputs.environment)
+      - name: Deploy to ${{ matrix.environment }} VPS via SSH
+        if: (github.event_name == 'pull_request' && github.event.pull_request.base.ref == matrix.branch) || (github.event_name == 'workflow_dispatch' && github.ref == format('refs/heads/{0}', matrix.branch))
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VPS_HOST }}
