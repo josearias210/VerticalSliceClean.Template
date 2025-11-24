@@ -55,3 +55,122 @@ Para ejecutar el build manualmente:
 
 Las imágenes construidas aparecen en la página principal del repositorio, en la sección **Packages** (barra lateral derecha).
 URL típica: `ghcr.io/usuario/acme-api:etiqueta`
+
+---
+
+## 6. Deployment Automático a VPS
+
+El sistema soporta **dos entornos** con deployment automático usando un único job parametrizado:
+
+### Entorno de Desarrollo
+-   **Trigger**: Merge a `develop`
+-   **Environment**: `development` (GitHub)
+-   **Secrets**: Configurados en environment `development`
+
+### Entorno de Producción
+-   **Trigger**: Merge a `master`
+-   **Environment**: `production` (GitHub)
+-   **Secrets**: Configurados en environment `production`
+
+### Proceso de Deployment
+
+1.  **Conexión SSH**: Se conecta al VPS correspondiente
+2.  **Autenticación**: Login a GHCR usando el token temporal del workflow
+3.  **Descarga**: `docker compose pull` fuerza la descarga de la imagen más reciente
+4.  **Reinicio**: `docker compose up -d` reinicia los servicios con la nueva imagen
+5.  **Verificación**: Espera y verifica que el API esté saludable
+
+### Configuración de Environments en GitHub
+
+GitHub Environments permite tener secrets separados por entorno.
+
+#### Paso 1: Crear Environments
+1.  Ve a tu repositorio → Settings → Environments
+2.  Click "New environment"
+3.  Crea dos environments:
+    -   `development`
+    -   `production`
+
+#### Paso 2: Configurar Secrets por Environment
+
+Para **cada environment**, agrega estos secrets:
+
+| Secret | Descripción | Requerido | Default | Ejemplo |
+| :--- | :--- | :--- | :--- | :--- |
+| `VPS_HOST` | IP del VPS | ✅ Sí | - | `123.45.67.89` |
+| `VPS_USERNAME` | Usuario SSH | ✅ Sí | - | `root` |
+| `VPS_SSH_KEY` | Clave privada SSH | ✅ Sí | - | `-----BEGIN RSA...` |
+| `VPS_PORT` | Puerto SSH | ❌ No | `22` | `22` |
+| `VPS_DOMAIN` | Dominio | ✅ Sí | - | `api.yourdomain.com` |
+| `VPS_PATH` | Path en VPS | ❌ No | `/opt/acme` | `/opt/acme` |
+| `CONTAINER_NAME` | Nombre del container | ❌ No | `acme-api-prod` | `acme-api-prod` |
+
+> **💡 Tip**: Si dev y prod están en **máquinas diferentes**, puedes usar el **mismo path** (`/opt/acme`) en ambas. Solo cambia `VPS_HOST` y `VPS_DOMAIN`.
+
+#### Paso 3: Cómo Obtener la SSH Key
+
+Si no tienes una clave SSH para el deployment:
+
+**1. Generar nueva clave SSH:**
+```bash
+ssh-keygen -t rsa -b 4096 -f ~/.ssh/vps_deploy
+```
+
+**2. Ver la clave PRIVADA (para copiar al secret `VPS_SSH_KEY`):**
+```bash
+cat ~/.ssh/vps_deploy
+```
+Copia **TODO** el contenido, incluyendo las líneas `-----BEGIN RSA PRIVATE KEY-----` y `-----END RSA PRIVATE KEY-----`.
+
+**3. Ver la clave PÚBLICA (para copiar al VPS):**
+```bash
+cat ~/.ssh/vps_deploy.pub
+```
+
+**4. Copiar la clave pública al VPS:**
+```bash
+# Opción 1: Automática
+ssh-copy-id -i ~/.ssh/vps_deploy.pub root@TU_VPS_IP
+
+# Opción 2: Manual
+# Conecta al VPS y agrega la clave pública a ~/.ssh/authorized_keys
+```
+
+**5. Probar la conexión:**
+```bash
+ssh -i ~/.ssh/vps_deploy root@TU_VPS_IP
+```
+
+#### Ejemplo de Configuración Completa
+
+**Environment: `development`**
+```
+VPS_HOST = 192.168.1.100
+VPS_USERNAME = root
+VPS_SSH_KEY = -----BEGIN RSA PRIVATE KEY-----
+MIIEpAIBAAKCAQEA...
+-----END RSA PRIVATE KEY-----
+VPS_DOMAIN = dev.myapi.com
+```
+
+**Environment: `production`**
+```
+VPS_HOST = 203.0.113.50
+VPS_USERNAME = root
+VPS_SSH_KEY = -----BEGIN RSA PRIVATE KEY-----
+MIIEpAIBAAKCAQEA...
+-----END RSA PRIVATE KEY-----
+VPS_DOMAIN = api.myapi.com
+```
+
+
+### Requisitos del VPS
+
+Cada VPS debe tener en el path configurado (default: `/opt/acme`):
+- `docker-compose.production.yml`
+- `.env` (con variables del entorno correspondiente)
+- `Caddyfile`
+
+
+
+

@@ -103,3 +103,67 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+  # ============================================
+  # Job 3: Deploy to VPS (Multi-Environment)
+  # ============================================
+  deploy-to-vps:
+    if: (github.event.pull_request.base.ref == 'develop' || github.event.pull_request.base.ref == 'master') && github.event.pull_request.merged == true
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - branch: develop
+            environment: development
+          - branch: master
+            environment: production
+    environment:
+      name: ${{ matrix.environment }}
+      url: https://${{ secrets.VPS_DOMAIN }}
+    
+    steps:
+      - name: Deploy to ${{ matrix.environment }} VPS via SSH
+        if: github.event.pull_request.base.ref == matrix.branch
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          script: |
+            set -e
+            cd ${{ secrets.VPS_PATH || '/opt/acme' }}
+            
+            # Login to GitHub Container Registry
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            
+            # Pull latest images (force download)
+            docker compose -f docker-compose.production.yml pull
+            
+            # Restart services with new images
+            docker compose -f docker-compose.production.yml up -d
+            
+            # Logout from registry
+            docker logout ghcr.io
+            
+            # Wait for services to be healthy
+            echo "Waiting for services to start..."
+            sleep 10
+            
+            # Check API health
+            CONTAINER_NAME="${{ secrets.CONTAINER_NAME || 'acme-api-prod' }}"
+            for i in {1..30}; do
+              if docker exec $CONTAINER_NAME curl -f http://localhost:8080/health > /dev/null 2>&1; then
+                echo "✅ ${{ matrix.environment }} API is healthy!"
+                break
+              fi
+              echo "Waiting for API... ($i/30)"
+              sleep 2
+            done
+            
+            # Show running containers
+            docker compose -f docker-compose.production.yml ps
+            
+            echo "🚀 ${{ matrix.environment }} deployment completed successfully!"
+
