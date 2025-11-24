@@ -2,8 +2,9 @@ using Acme.Domain.Constants;
 using Acme.Domain.Enums;
 using Acme.Domain.Extensions;
 using FluentAssertions;
+using Xunit;
 
-namespace Acme.Application.Tests.Domain;
+namespace Acme.Application.Unit.Tests.Domain;
 
 public class RoleExtensionsTests
 {
@@ -12,7 +13,7 @@ public class RoleExtensionsTests
     [InlineData(Role.Developer, Roles.Developer)]
     [InlineData(Role.User, Roles.User)]
     [InlineData(Role.Manager, Roles.Manager)]
-    public void ToRoleName_ReturnsExpectedString(Role role, string expected)
+    public void ToRoleNameReturnsExpectedString(Role role, string expected)
     {
         var name = role.ToRoleName();
 
@@ -24,7 +25,7 @@ public class RoleExtensionsTests
     [InlineData(Roles.Developer, Role.Developer)]
     [InlineData(Roles.User, Role.User)]
     [InlineData(Roles.Manager, Role.Manager)]
-    public void ToRole_ParsesKnownRoles(string roleName, Role expected)
+    public void ToRoleParsesKnownRoles(string roleName, Role expected)
     {
         var role = roleName.ToRole();
 
@@ -32,7 +33,7 @@ public class RoleExtensionsTests
     }
 
     [Fact]
-    public void ToRole_ThrowsForUnknownRole()
+    public void ToRoleThrowsForUnknownRole()
     {
         var act = () => "Unknown".ToRole();
 
@@ -42,7 +43,7 @@ public class RoleExtensionsTests
     }
 
     [Fact]
-    public void TryToRole_ReturnsFalseForUnknownRole()
+    public void TryToRoleReturnsFalseForUnknownRole()
     {
         var result = "Unknown".TryToRole(out var role);
 
@@ -51,7 +52,7 @@ public class RoleExtensionsTests
     }
 
     [Fact]
-    public void TryToRole_ReturnsTrueForKnownRole()
+    public void TryToRoleReturnsTrueForKnownRole()
     {
         var result = Roles.Admin.TryToRole(out var role);
 

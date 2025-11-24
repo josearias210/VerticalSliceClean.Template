@@ -1,16 +1,17 @@
+namespace Acme.Application.Unit.Tests.Features.Account.RegisterAccount;
+
 using Acme.Application.Common;
 using Acme.Application.Features.Account.RegisterAccount;
 using Acme.Domain.Enums;
 using FluentAssertions;
-
-namespace Acme.Application.Tests.Features.Account.RegisterAccount;
+using Xunit;
 
 public class RegisterAccountCommandValidatorTests
 {
     private readonly RegisterAccountCommandValidator _validator = new();
 
     [Fact]
-    public void Validate_ReturnsErrors_WhenMandatoryFieldsAreMissing()
+    public void ValidateReturnsErrorsWhenMandatoryFieldsAreMissing()
     {
         var command = new RegisterAccountCommand
         {
@@ -27,7 +28,7 @@ public class RegisterAccountCommandValidatorTests
     }
 
     [Fact]
-    public void Validate_ReturnsRoleInvalid_WhenRoleIsOutOfRange()
+    public void ValidateReturnsRoleInvalidWhenRoleIsOutOfRange()
     {
         var command = new RegisterAccountCommand
         {
@@ -42,7 +43,7 @@ public class RegisterAccountCommandValidatorTests
     }
 
     [Fact]
-    public void Validate_BlocksDeveloperRole()
+    public void ValidateBlocksDeveloperRole()
     {
         var command = new RegisterAccountCommand
         {

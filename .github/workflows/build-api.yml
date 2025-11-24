@@ -51,8 +51,11 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore src/Acme.slnx
 
-      - name: Run unit tests
-        run: dotnet test src/Acme.slnx --configuration Release
+      - name: Build solution
+        run: dotnet build src/Acme.slnx --configuration Release --no-restore
+
+      - name: Run application unit tests
+        run: dotnet test tests/Acme.Application.Unit.Tests/Acme.Application.Unit.Tests.csproj --configuration Release --no-build --no-restore
 
       - name: Log in to the Container registry
         uses: docker/login-action@v3
