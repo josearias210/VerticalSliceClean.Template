@@ -364,3 +364,4 @@ FodyWeavers.xsd
 *.env
 /.vscode
 data
+.mcp.json
