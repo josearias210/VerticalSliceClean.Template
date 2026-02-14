@@ -7,12 +7,30 @@
     "nuget": {
       "type": "stdio",
       "command": "dnx",
-      "args": ["NuGet.Mcp.Server", "--yes"]
+      "args": [
+        "NuGet.Mcp.Server",
+        "--yes"
+      ]
     },
     "postgres": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-postgres", "postgresql://postgres:postgres@localhost:5432/AcmeDb"]
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-postgres",
+        "postgresql://postgres:postgres@localhost:5432/AcmeDb"
+      ]
+    },
+    "trello": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@delorenj/mcp-server-trello"
+      ],
+      "env": {
+        "TRELLO_API_KEY": "xxx",
+        "TRELLO_TOKEN": "xxx"
+      }
     }
   }
 }

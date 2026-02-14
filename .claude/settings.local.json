@@ -11,12 +11,16 @@
       "Bash(dotnet --version:*)",
       "Bash(npx:*)",
       "Bash(timeout 15 dnx:*)",
-      "Bash(dnx:*)"
+      "Bash(dnx:*)",
+      "mcp__trello__get_cards_by_list_id",
+      "mcp__trello__add_card_to_list"
     ]
   },
+  "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
     "microsoft-learn",
     "nuget",
-    "postgres"
+    "postgres",
+    "trello"
   ]
 }
