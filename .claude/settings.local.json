@@ -7,7 +7,9 @@
       "Bash(find:*)",
       "WebFetch(domain:github.com)",
       "WebFetch(domain:developer.microsoft.com)",
-      "WebFetch(domain:devblogs.microsoft.com)"
+      "WebFetch(domain:devblogs.microsoft.com)",
+      "Bash(dotnet --version:*)",
+      "Bash(npx:*)"
     ]
   }
 }
