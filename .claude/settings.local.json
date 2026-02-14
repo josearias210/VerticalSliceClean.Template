@@ -9,7 +9,14 @@
       "WebFetch(domain:developer.microsoft.com)",
       "WebFetch(domain:devblogs.microsoft.com)",
       "Bash(dotnet --version:*)",
-      "Bash(npx:*)"
+      "Bash(npx:*)",
+      "Bash(timeout 15 dnx:*)",
+      "Bash(dnx:*)"
     ]
-  }
+  },
+  "enabledMcpjsonServers": [
+    "microsoft-learn",
+    "nuget",
+    "postgres"
+  ]
 }
