@@ -113,13 +113,10 @@ dotnet nuget push ./nupkg/VerticalSliceClean.Template.1.1.0.nupkg `
 
 ```powershell
 # Crear tag con la versión
-git tag -a v1.1.0 -m "Release v1.1.0 - Docker Compose support"
+git tag -a v1.1.0 -m "v1.1.0 - Docker Compose support"
 
 # Subir tag a GitHub
 git push origin v1.1.0
-
-# Crear GitHub Release desde el tag
-# (ir a GitHub → Releases → Draft a new release)
 ```
 
 ### Opción 3: Instalación Local/Compartida
@@ -246,67 +243,14 @@ git commit -m "BREAKING CHANGE: remover parámetro DatabaseName"
 
 ---
 
-## 🤖 Versionamiento Automático con GitHub Actions
+## 🤖 Build en GitHub Actions
 
-Crea `.github/workflows/release.yml`:
+El repositorio usa un único workflow de build en `.github/workflows/build-api.yml` para restaurar, compilar, ejecutar tests y construir/publicar imagen Docker según el evento.
 
-```yaml
-name: Release Template
+Para ejecutarlo manualmente:
 
-on:
-  push:
-    tags:
-      - 'v*'
-
-jobs:
-  release:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: '10.0.x'
-      
-      - name: Extract version from tag
-        id: get_version
-        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
-      
-      - name: Create NuGet Package
-        run: |
-          nuget pack VerticalSliceClean.Template.nuspec \
-            -Version ${{ steps.get_version.outputs.VERSION }} \
-            -OutputDirectory ./nupkg
-      
-      - name: Publish to NuGet
-        run: |
-          dotnet nuget push ./nupkg/*.nupkg \
-            --api-key ${{ secrets.NUGET_API_KEY }} \
-            --source https://api.nuget.org/v3/index.json
-      
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
-        with:
-          files: ./nupkg/*.nupkg
-          generate_release_notes: true
-```
-
-**Uso:**
 ```powershell
-# Actualizar versión en template.json a 1.1.0
-git add .template.config/template.json
-git commit -m "chore: bump version to 1.1.0"
-git push
-
-# Crear y subir tag
-git tag -a v1.1.0 -m "Release v1.1.0"
-git push origin v1.1.0
-
-# GitHub Actions automáticamente:
-# 1. Crea el paquete NuGet
-# 2. Publica a NuGet.org
-# 3. Crea GitHub Release
+# GitHub → Actions → Build API → Run workflow
 ```
 
 ---
@@ -329,6 +273,5 @@ git push origin v1.1.0
 - [ ] Crear commit con mensaje descriptivo
 - [ ] Crear tag git `v1.x.x`
 - [ ] Push tag a GitHub
-- [ ] Crear GitHub Release (opcional)
 - [ ] Publicar a NuGet (opcional)
 - [ ] Notificar a usuarios/equipo

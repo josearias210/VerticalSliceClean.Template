@@ -126,7 +126,6 @@ If you want to run the API from source (Visual Studio / VS Code) but keep infras
 ### **CI/CD** 🚀
 - ✅ **Single Workflow** (`build-api.yml`) for all build tasks
 - ✅ **Automated Tests** (`dotnet test`) before build
-- ✅ **Semantic Versioning** (Tags `v1.0.0` → Docker `1.0.0`)
 - ✅ **Manual Triggers** via GitHub Actions UI
 - 📄 **[View Build Process Documentation](docs/BUILD_PROCESS.md)**
 

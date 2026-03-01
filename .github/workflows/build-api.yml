@@ -1,7 +1,7 @@
-name: Build and Publish API (v2)
+name: Build API
 
 on:
-  # Trigger on PR merge (Develop/Main)
+  # Trigger on Pull Requests (Develop/Main)
   pull_request:
     types: [opened, synchronize, reopened, closed]
     branches: [ "main", "develop" ]
@@ -13,24 +13,16 @@ on:
   # Trigger on Manual Run
   workflow_dispatch:
 
-  # Trigger on SemVer Tags (v1.0.0, v2.1.0-rc1)
-  push:
-    tags:
-      - 'v*'
-
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}-api
 
-# Concurrency Control: Prevent simultaneous deployments to same environment
+# Concurrency control
 concurrency:
-  group: deploy-${{ github.event.pull_request.base.ref || github.ref }}
+  group: build-${{ github.event.pull_request.base.ref || github.ref }}
   cancel-in-progress: false
 
 jobs:
-  # ============================================
-  # Job 1: Build & Push
-  # ============================================
   build:
     name: Build
     runs-on: ubuntu-latest
@@ -79,11 +71,6 @@ jobs:
             type=ref,event=branch
             type=ref,event=pr
             
-            # SemVer tags (v1.0.0 -> 1.0.0, 1.0, latest)
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=semver,pattern={{major}}
-            
             # SHA tag for traceability
             type=sha
             
@@ -109,123 +96,3 @@ jobs:
             BUILD_DATE=${{ env.BUILD_DATE }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
-  # ============================================
-  # Job 2: Release Development
-  # ============================================
-  release-development:
-    name: Release Development
-    if: (github.event_name == 'pull_request' && github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'develop') || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/develop')
-    needs: build
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    environment:
-      name: development
-    
-    steps:
-      - name: Deploy to Development VPS via SSH
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USERNAME }}
-          key: ${{ secrets.VPS_SSH_KEY }}
-          port: ${{ secrets.VPS_PORT || 22 }}
-          script: |
-            set -e
-            cd ${{ secrets.VPS_PATH || '/opt/acme' }}
-            
-            # Login to GitHub Container Registry
-            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-            
-            # Pull latest images (force download)
-            docker compose pull
-            
-            # Restart services with new images
-            docker compose up -d
-            
-            # Logout from registry
-            docker logout ghcr.io
-            
-            # Image Cleanup Optimization
-            echo "Cleaning up old images..."
-            docker image prune -af --filter "until=168h" || true
-            
-            # Wait for services to be healthy
-            echo "Waiting for services to start..."
-            sleep 10
-            
-            # Check API health
-            CONTAINER_NAME="${{ secrets.CONTAINER_NAME || 'acme-api-dev' }}"
-            for i in {1..30}; do
-              if docker exec $CONTAINER_NAME curl -f http://localhost:8080/health > /dev/null 2>&1; then
-                echo "✅ Development API is healthy!"
-                break
-              fi
-              echo "Waiting for API... ($i/30)"
-              sleep 2
-            done
-            
-            # Show running containers
-            docker compose ps
-            
-            echo "🚀 Development deployment completed successfully!"
-
-  # ============================================
-  # Job 3: Release Production
-  # ============================================
-  release-production:
-    name: Release Production
-    if: (github.event_name == 'pull_request' && github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main') || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main')
-    needs: build
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    environment:
-      name: production
-    
-    steps:
-      - name: Deploy to Production VPS via SSH
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USERNAME }}
-          key: ${{ secrets.VPS_SSH_KEY }}
-          port: ${{ secrets.VPS_PORT || 22 }}
-          script: |
-            set -e
-            cd ${{ secrets.VPS_PATH || '/opt/acme' }}
-            
-            # Login to GitHub Container Registry
-            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-            
-            # Pull latest images (force download)
-            docker compose pull
-            
-            # Restart services with new images
-            docker compose up -d
-            
-            # Logout from registry
-            docker logout ghcr.io
-            
-            # Image Cleanup Optimization
-            echo "Cleaning up old images..."
-            docker image prune -af --filter "until=168h" || true
-            
-            # Wait for services to be healthy
-            echo "Waiting for services to start..."
-            sleep 10
-            
-            # Check API health
-            CONTAINER_NAME="${{ secrets.CONTAINER_NAME || 'acme-api-prod' }}"
-            for i in {1..30}; do
-              if docker exec $CONTAINER_NAME curl -f http://localhost:8080/health > /dev/null 2>&1; then
-                echo "✅ Production API is healthy!"
-                break
-              fi
-              echo "Waiting for API... ($i/30)"
-              sleep 2
-            done
-            
-            # Show running containers
-            docker compose ps
-            
-            echo "🚀 Production deployment completed successfully!"
