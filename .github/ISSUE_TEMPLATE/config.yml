@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability report
+    url: https://github.com/josearias210/VerticalSliceClean.Template/security/advisories/new
+    about: Please report security vulnerabilities via private advisory only.

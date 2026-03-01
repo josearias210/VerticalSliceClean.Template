@@ -1,0 +1,22 @@
+<Project>
+  <!-- Propiedades comunes aplicadas a todos los proyectos -->
+  <PropertyGroup>
+    <LangVersion>14.0</LangVersion>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisLevel>latest-recommended</AnalysisLevel>
+    <!-- Suprimir warnings específicos en archivos autogenerados -->
+    <NoWarn>$(NoWarn);CA1861;S1075</NoWarn>
+  </PropertyGroup>
+
+  <!-- Excluir análisis en archivos autogenerados -->
+  <ItemGroup>
+    <Compile Update="**\Migrations\*.cs">
+      <IsExcludedFromStyleCop>true</IsExcludedFromStyleCop>
+    </Compile>
+  </ItemGroup>
+
+</Project>

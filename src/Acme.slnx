@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="Acme.Api\Acme.Api.csproj" />
+  <Project Path="Acme.Domain\Acme.Domain.csproj" />
+  <Project Path="Acme.Host\Acme.Host.csproj" />
+  <Project Path="Acme.Infrastructure\Acme.Infrastructure.csproj" />
+  <Project Path="Acme.Application\Acme.Application.csproj" />
+  <Project Path="..\tests\Acme.Application.Unit.Tests\Acme.Application.Unit.Tests.csproj" />
+</Solution>

@@ -1,0 +1,204 @@
+version: "3.9"
+
+# =============================================================================
+# Docker Compose - VPS Deployment (Development & Production)
+# =============================================================================
+# Services: API + PostgreSQL + Caddy (Reverse Proxy)
+#
+# Deployment:
+#   docker compose up -d
+#
+# View logs:
+#   docker compose logs -f
+# =============================================================================
+
+services:
+  # ============================================
+  # PostgreSQL 16
+  # ============================================
+  postgres:
+    image: postgres:16-alpine
+    container_name: acme-postgres-prod
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${DB_NAME:-AcmeDb}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - postgres_backups:/backups
+    networks:
+      - acme-network
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # ============================================
+  # Database Backup (Sidecar)
+  # ============================================
+  db-backup:
+    image: postgres:16-alpine
+    container_name: acme-db-backup
+    restart: unless-stopped
+    entrypoint: /bin/sh
+    command: /scripts/backup-db.sh
+    environment:
+      PGHOST: postgres
+      PGUSER: ${POSTGRES_USER:-postgres}
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      PGDATABASE: ${DB_NAME:-AcmeDb}
+      RETENTION_DAYS: 7
+    volumes:
+      - ./scripts:/scripts:ro
+      - postgres_backups:/backups
+    depends_on:
+      postgres:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.1'
+          memory: 64M
+
+  # ============================================
+  # API
+  # ============================================
+  api:
+    image: ${DOCKER_IMAGE:-ghcr.io/josearias210/acme-api:latest}
+    container_name: acme-api-prod
+    restart: unless-stopped
+    ports:
+      - "8080:8080" # HTTP (Internal, exposed for debugging if needed, usually via Caddy)
+    environment:
+      # ASP.NET Core
+      ASPNETCORE_ENVIRONMENT: "Production"
+      ASPNETCORE_URLS: "http://+:8080"
+
+      # Database
+      ConnectionStrings__DefaultConnection: "Server=postgres;Port=5432;Database=${DB_NAME:-AcmeDb};User Id=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD};"
+
+      # JWT Settings
+      JwtSettings__Key: ${JWT_SECRET_KEY}
+      JwtSettings__Issuer: ${JWT_ISSUER:-Acme}
+      JwtSettings__Audience: ${JWT_AUDIENCE:-Acme.Api}
+      JwtSettings__AccessTokenMinutes: ${JWT_ACCESS_TOKEN_MINUTES:-15}
+      JwtSettings__RefreshTokenDays: ${JWT_REFRESH_TOKEN_DAYS:-7}
+
+      # Admin User (initial setup)
+      Admin__Email: ${ADMIN_EMAIL}
+      Admin__Password: ${ADMIN_PASSWORD}
+
+      # Database initialization
+      Database__ApplyMigrationsOnStartup: ${DB_APPLY_MIGRATIONS:-false}
+      Database__SeedRolesOnStartup: ${DB_SEED_ROLES:-true}
+      Database__SeedAdminOnStartup: ${DB_SEED_ADMIN:-false}
+
+      # CORS
+      Cors__AllowedOrigins__0: ${CORS_ORIGIN_1:-https://yourdomain.com}
+      Cors__AllowedOrigins__1: ${CORS_ORIGIN_2:-https://www.yourdomain.com}
+
+      # Logging (minimal for production)
+      Logging__MinimumLevel: ${LOG_LEVEL:-Information}
+      Logging__Seq__ServerUrl: ${SEQ_URL:-}
+      Logging__Seq__ApiKey: ${SEQ_API_KEY:-}
+
+      # OpenTelemetry (disabled by default in production)
+      OpenTelemetry__OtlpEndpoint: ${OTEL_ENDPOINT:-}
+      OpenTelemetry__ServiceName: "Acme.Api"
+      OpenTelemetry__ServiceVersion: ${APP_VERSION:-0.1.0}
+
+    volumes:
+      - api_logs:/app/logs
+
+    networks:
+      - acme-network
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # ============================================
+  # Reverse Proxy (Caddy for auto HTTPS)
+  # ============================================
+  caddy:
+    image: caddy:2-alpine
+    container_name: acme-caddy-prod
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp" # HTTP/3
+    environment:
+      DOMAIN: ${DOMAIN:-localhost}
+      API_HOST: api:8080
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - acme-network
+    depends_on:
+      api:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.1'
+          memory: 64M
+
+# ============================================
+# Networks
+# ============================================
+networks:
+  acme-network:
+    driver: bridge
+
+# ============================================
+# Volumes
+# ============================================
+volumes:
+  postgres_data:
+    driver: local
+  postgres_backups:
+    driver: local
+  api_logs:
+    driver: local
+  caddy_data:
+    driver: local
+  caddy_config:
+    driver: local
